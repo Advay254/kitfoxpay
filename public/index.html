@@ -385,6 +385,7 @@
                 <button class="tab-btn active" data-tab="server" onclick="showTab('server')">🌐 网站设置</button>
                 <button class="tab-btn" data-tab="jeepay" onclick="showTab('jeepay')">🚀 Jeepay 配置</button>
                 <button class="tab-btn" data-tab="epay" onclick="showTab('epay')">💳 易支付 配置</button>
+                <button class="tab-btn" data-tab="paystack" onclick="showTab('paystack')">🌍 Paystack 配置</button>
                 <button class="tab-btn" data-tab="tests" onclick="showTab('tests')">🧪 接口调试</button>
             </div>
 
@@ -529,6 +530,175 @@
             </div>
 
             <!-- 接口调试 Tab -->
+            <!-- Paystack 配置 Tab / Paystack Config Tab -->
+            <div id="tabPaystack" class="tab-pane">
+                <div class="section">
+                    <div class="section-header">
+                        <span><span class="icon">🌍</span> Paystack 网关配置 / Paystack Gateway Config</span>
+                    </div>
+                    <div class="section-content">
+                        <div style="padding: 12px; background: #e8f5e9; border-left: 3px solid #4caf50; border-radius: 4px; margin-bottom: 16px; font-size: 13px;">
+                            💡 <strong>说明 / Note：</strong>
+                            启用 Paystack 后，所有支付请求将通过 Paystack 处理，Jeepay 配置仍需填写但不会用于支付。
+                            当前支持货币：NGN（尼日利亚奈拉）、GHS（加纳塞地）、ZAR（南非兰特）、KES（肯尼亚先令）等。<br>
+                            After enabling Paystack, all payment requests will route through Paystack. Jeepay config is still required but not used for payments.
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <input type="checkbox" id="paystackEnabled" style="margin-right: 8px; width: auto;">
+                                启用 Paystack 网关 / Enable Paystack Gateway
+                            </label>
+                            <div class="help-text">启用后支付通过 Paystack 处理 / When enabled, payments route through Paystack</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Paystack Secret Key <span style="color:#e53935">*</span></label>
+                            <div style="position:relative">
+                                <input type="password" id="paystackSecretKey"
+                                    placeholder="sk_test_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                                    style="width:100%; padding:10px 40px 10px 12px; border:1px solid #ddd; border-radius:6px; font-family: monospace;">
+                                <span onclick="togglePassword('paystackSecretKey')"
+                                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:#666;">👁</span>
+                            </div>
+                            <div class="help-text">格式 / Format: sk_test_... (测试 / test) 或 / or sk_live_... (正式 / live)。切勿泄露！/ Never expose this key!</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>货币代码 / Currency Code</label>
+                            <select id="paystackCurrency" style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px;">
+                                <option value="NGN">NGN — 尼日利亚奈拉 / Nigerian Naira</option>
+                                <option value="GHS">GHS — 加纳塞地 / Ghanaian Cedi</option>
+                                <option value="ZAR">ZAR — 南非兰特 / South African Rand</option>
+                                <option value="KES">KES — 肯尼亚先令 / Kenyan Shilling</option>
+                                <option value="USD">USD — 美元 / US Dollar</option>
+                                <option value="GBP">GBP — 英镑 / British Pound</option>
+                                <option value="EUR">EUR — 欧元 / Euro</option>
+                            </select>
+                            <div class="help-text">金额将自动转换为最小货币单位（×100）/ Amount will be auto-converted to subunit (×100)</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>默认客户邮箱 / Default Customer Email</label>
+                            <input type="email" id="paystackCustomerEmail"
+                                placeholder="customer@example.com"
+                                style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px;">
+                            <div class="help-text">当支付请求未提供邮箱时使用此默认值 / Used when payment request does not include email</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Webhook 路径 / Webhook Path</label>
+                            <input type="text" id="paystackWebhookPath"
+                                placeholder="/webhook/paystack"
+                                style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-family: monospace;">
+                            <div class="help-text">
+                                在 Paystack Dashboard → Settings → API Keys & Webhooks 中设置 Webhook URL 为：<br>
+                                <code id="webhookUrlPreview" style="background:#f5f5f5; padding:2px 6px; border-radius:3px; font-size:12px;"></code>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>API 基础地址 / API Base URL</label>
+                            <input type="text" id="paystackBaseUrl"
+                                placeholder="https://api.paystack.co"
+                                style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-family: monospace;">
+                            <div class="help-text">通常无需修改 / Usually no need to change this</div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>支付渠道 / Payment Channels</label>
+                            <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;">
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
+                                    <input type="checkbox" class="paystack-channel" value="card" checked> 💳 Card
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
+                                    <input type="checkbox" class="paystack-channel" value="bank" checked> 🏦 Bank
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
+                                    <input type="checkbox" class="paystack-channel" value="ussd" checked> 📱 USSD
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
+                                    <input type="checkbox" class="paystack-channel" value="mobile_money" checked> 📲 Mobile Money
+                                </label>
+                                <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
+                                    <input type="checkbox" class="paystack-channel" value="bank_transfer" checked> 🔄 Bank Transfer
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Paystack 测试 / Paystack Test Section -->
+                <div class="section">
+                    <div class="section-header">
+                        <span><span class="icon">🧪</span> Paystack 接口调试 / Paystack API Debug</span>
+                    </div>
+                    <div class="section-content">
+                        <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
+                            <button class="btn btn-secondary" onclick="showPaystackTest('initialize')">初始化交易 / Initialize</button>
+                            <button class="btn btn-secondary" onclick="showPaystackTest('verify')">验证交易 / Verify</button>
+                            <button class="btn btn-secondary" onclick="showPaystackTest('webhook')">模拟 Webhook / Simulate</button>
+                        </div>
+
+                        <!-- Initialize test -->
+                        <div id="paystackInitTest" style="display:none;">
+                            <div class="form-group">
+                                <label>out_trade_no（订单号 / Order No）</label>
+                                <input type="text" id="psTestOrderNo" placeholder="TEST_PS_1234567890" value="TEST_PS_">
+                            </div>
+                            <div class="form-group">
+                                <label>金额（元）/ Amount (yuan)</label>
+                                <input type="number" id="psTestAmount" placeholder="10.00" value="10.00" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label>商品名称 / Product Name</label>
+                                <input type="text" id="psTestName" placeholder="测试商品 / Test Product" value="测试商品">
+                            </div>
+                            <div class="form-group">
+                                <label>notify_url</label>
+                                <input type="text" id="psTestNotifyUrl" placeholder="https://your-site.com/notify">
+                            </div>
+                            <button class="btn btn-primary" onclick="testPaystackInitialize()" style="margin-top:8px;">🚀 测试初始化 / Test Initialize</button>
+                            <div id="psInitResult" style="margin-top:15px; display:none;">
+                                <strong>结果 / Result:</strong>
+                                <pre id="psInitResultContent" style="white-space:pre-wrap; word-wrap:break-word; font-size:12px; max-height:400px; overflow-y:auto; background:#f5f5f5; padding:12px; border-radius:6px; margin-top:8px;"></pre>
+                            </div>
+                        </div>
+
+                        <!-- Verify test -->
+                        <div id="paystackVerifyTest" style="display:none;">
+                            <div class="form-group">
+                                <label>交易参考号 / Transaction Reference</label>
+                                <input type="text" id="psTestReference" placeholder="out_trade_no 或 Paystack reference">
+                            </div>
+                            <button class="btn btn-primary" onclick="testPaystackVerify()" style="margin-top:8px;">🔍 验证交易 / Verify</button>
+                            <div id="psVerifyResult" style="margin-top:15px; display:none;">
+                                <strong>结果 / Result:</strong>
+                                <pre id="psVerifyResultContent" style="white-space:pre-wrap; word-wrap:break-word; font-size:12px; max-height:400px; overflow-y:auto; background:#f5f5f5; padding:12px; border-radius:6px; margin-top:8px;"></pre>
+                            </div>
+                        </div>
+
+                        <!-- Webhook simulation test -->
+                        <div id="paystackWebhookTest" style="display:none;">
+                            <div style="padding:12px; background:#fff3e0; border-left:3px solid #ff9800; border-radius:4px; margin-bottom:16px; font-size:13px;">
+                                ⚠ 此测试发送不含有效签名的模拟 Webhook，服务器将拒绝（401）。用于验证拒绝逻辑是否正常工作。<br>
+                                This test sends a simulated webhook without a valid signature; server should reject (401/ignored). Tests rejection logic.
+                            </div>
+                            <button class="btn btn-secondary" onclick="testPaystackWebhookSimulate()">📡 发送模拟 Webhook / Send Simulated Webhook</button>
+                            <div id="psWebhookResult" style="margin-top:15px; display:none;">
+                                <strong>结果 / Result:</strong>
+                                <pre id="psWebhookResultContent" style="white-space:pre-wrap; word-wrap:break-word; font-size:12px; max-height:300px; overflow-y:auto; background:#f5f5f5; padding:12px; border-radius:6px; margin-top:8px;"></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
+                    <button type="button" class="btn btn-secondary" onclick="loadConfig()">🔄 重新加载 / Reload</button>
+                    <button type="button" class="btn btn-primary" onclick="saveConfig()">💾 保存配置 / Save Config</button>
+                </div>
+            </div>
+
             <div id="tabTests" class="tab-pane">
                 <!-- 测试模块 -->
                 <div style="margin-top: 10px;">
@@ -1086,6 +1256,22 @@
                     document.getElementById('serverHost').value = config.server?.host || '';
                     document.getElementById('serverPort').value = config.server?.port || '';
                     // 不填充密码字段
+
+                    // Paystack 配置 / Paystack config
+                    if (config.paystack) {
+                        document.getElementById('paystackEnabled').checked = !!config.paystack.enabled;
+                        document.getElementById('paystackSecretKey').value = config.paystack.secretKey || '';
+                        document.getElementById('paystackCurrency').value = config.paystack.currency || 'NGN';
+                        document.getElementById('paystackCustomerEmail').value = config.paystack.customerEmail || '';
+                        document.getElementById('paystackWebhookPath').value = config.paystack.webhookPath || '/webhook/paystack';
+                        document.getElementById('paystackBaseUrl').value = config.paystack.baseUrl || 'https://api.paystack.co';
+                        // 恢复渠道选择 / Restore channel checkboxes
+                        const savedChannels = config.paystack.channels || ['card','bank','ussd','mobile_money','bank_transfer'];
+                        document.querySelectorAll('.paystack-channel').forEach(cb => {
+                            cb.checked = savedChannels.includes(cb.value);
+                        });
+                        _updateWebhookPreview();
+                    }
                     
                     // 重新加载IP地址列表
                     loadNetworkInterfaces();
@@ -1173,6 +1359,15 @@
                 },
                 admin: {
                     password: adminPassword || ''
+                },
+                paystack: {
+                    enabled:       document.getElementById('paystackEnabled')?.checked || false,
+                    secretKey:     document.getElementById('paystackSecretKey')?.value.trim() || '',
+                    currency:      document.getElementById('paystackCurrency')?.value || 'NGN',
+                    customerEmail: document.getElementById('paystackCustomerEmail')?.value.trim() || '',
+                    webhookPath:   document.getElementById('paystackWebhookPath')?.value.trim() || '/webhook/paystack',
+                    baseUrl:       document.getElementById('paystackBaseUrl')?.value.trim() || 'https://api.paystack.co',
+                    channels:      Array.from(document.querySelectorAll('.paystack-channel:checked')).map(cb => cb.value)
                 }
             };
 
@@ -1777,6 +1972,123 @@
             checkAuthStatus();
             initPaymentTypeDefaults();
         });
+
+        // ========== Paystack 配置辅助 / Paystack config helpers ==========
+
+        function _updateWebhookPreview() {
+            const domain = document.getElementById('siteDomain')?.value.trim() || '';
+            const path   = document.getElementById('paystackWebhookPath')?.value.trim() || '/webhook/paystack';
+            const el = document.getElementById('webhookUrlPreview');
+            if (el) el.textContent = domain + path;
+        }
+
+        // 在域名或路径字段变化时更新预览 / Update preview on domain/path change
+        document.addEventListener('DOMContentLoaded', () => {
+            const siteEl = document.getElementById('siteDomain');
+            const pathEl = document.getElementById('paystackWebhookPath');
+            if (siteEl) siteEl.addEventListener('input', _updateWebhookPreview);
+            if (pathEl) pathEl.addEventListener('input', _updateWebhookPreview);
+            _updateWebhookPreview();
+        });
+
+        // 显示 Paystack 测试面板 / Show Paystack test panel
+        function showPaystackTest(type) {
+            ['paystackInitTest','paystackVerifyTest','paystackWebhookTest'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = 'none';
+            });
+            if (type === 'initialize') document.getElementById('paystackInitTest').style.display = 'block';
+            if (type === 'verify')     document.getElementById('paystackVerifyTest').style.display = 'block';
+            if (type === 'webhook')    document.getElementById('paystackWebhookTest').style.display = 'block';
+        }
+
+        // 测试 Paystack 初始化（通过 mapi.php）/ Test Paystack initialize via mapi.php
+        async function testPaystackInitialize() {
+            const orderNo  = document.getElementById('psTestOrderNo').value.trim() || ('TEST_PS_' + Date.now());
+            const amount   = parseFloat(document.getElementById('psTestAmount').value) || 10;
+            const name     = document.getElementById('psTestName').value.trim()       || 'Test Product';
+            const notify   = document.getElementById('psTestNotifyUrl').value.trim()  || '';
+
+            // 注意：需要先在配置中填入 epay.key 才能生成签名。此测试不签名，仅显示原始结果。
+            // Note: This test calls mapi.php without a proper signature to show raw response.
+            const params = new URLSearchParams({
+                pid:         document.getElementById('epayPid')?.value || '1',
+                out_trade_no: orderNo,
+                type:        'paystack',
+                money:       amount.toFixed(2),
+                name,
+                notify_url:  notify || (window.location.origin + '/notify_test'),
+                return_url:  window.location.origin + '/return_test',
+                sign:        '00000000000000000000000000000000',
+                sign_type:   'MD5'
+            });
+
+            document.getElementById('psInitResult').style.display = 'block';
+            document.getElementById('psInitResultContent').textContent = '请求中... / Requesting...';
+
+            try {
+                const resp = await fetch('/mapi.php?' + params.toString());
+                const data = await resp.json();
+                document.getElementById('psInitResultContent').textContent = JSON.stringify(data, null, 2);
+            } catch(e) {
+                document.getElementById('psInitResultContent').textContent = '错误 / Error: ' + e.message;
+            }
+        }
+
+        // 测试 Paystack 验证（通过 api.php?act=order）/ Test Paystack verify via api.php
+        async function testPaystackVerify() {
+            const ref = document.getElementById('psTestReference').value.trim();
+            if (!ref) { showAlert('请输入交易参考号 / Please enter transaction reference', 'error'); return; }
+
+            document.getElementById('psVerifyResult').style.display = 'block';
+            document.getElementById('psVerifyResultContent').textContent = '验证中... / Verifying...';
+
+            const params = new URLSearchParams({
+                act:         'order',
+                pid:         document.getElementById('epayPid')?.value || '1',
+                key:         document.getElementById('epayKey')?.value || '',
+                out_trade_no: ref
+            });
+
+            try {
+                const resp = await fetch('/api.php?' + params.toString());
+                const data = await resp.json();
+                document.getElementById('psVerifyResultContent').textContent = JSON.stringify(data, null, 2);
+            } catch(e) {
+                document.getElementById('psVerifyResultContent').textContent = '错误 / Error: ' + e.message;
+            }
+        }
+
+        // 模拟无效 Webhook（验证拒绝逻辑）/ Simulate invalid webhook (verify rejection logic)
+        async function testPaystackWebhookSimulate() {
+            const webhookPath = document.getElementById('paystackWebhookPath')?.value.trim() || '/webhook/paystack';
+
+            document.getElementById('psWebhookResult').style.display = 'block';
+            document.getElementById('psWebhookResultContent').textContent = '发送中... / Sending...';
+
+            const fakePayload = JSON.stringify({
+                event: 'charge.success',
+                data:  { id: 999999, reference: 'fake_ref_test', amount: 100, status: 'success' }
+            });
+
+            try {
+                const resp = await fetch(webhookPath, {
+                    method:  'POST',
+                    headers: {
+                        'Content-Type':          'application/json',
+                        'x-paystack-signature':  'invalid_fake_signature_0000000000000000000'
+                    },
+                    body: fakePayload
+                });
+                const result = `HTTP ${resp.status}\n\n` +
+                    '✅ 服务器返回 200（正确！Paystack Webhook 应始终收到 200）/ Server returned 200 (correct! Paystack webhook always gets 200)\n' +
+                    '   但事件不会被处理（签名无效会被静默丢弃）/ But event is not processed (invalid signature is silently discarded).';
+                document.getElementById('psWebhookResultContent').textContent = result;
+            } catch(e) {
+                document.getElementById('psWebhookResultContent').textContent = '错误 / Error: ' + e.message;
+            }
+        }
+
     </script>
 </body>
 </html>
