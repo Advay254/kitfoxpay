@@ -133,27 +133,38 @@ router.get('/status', (req, res) => {
  */
 configRouter.get('/', requireAuth, (req, res) => {
   try {
-    // 重新加载配置文件以获取最新内容
+    // 重新加载配置文件以获取最新内容 / Reload config file for latest content
     delete require.cache[require.resolve('./config')];
     const currentConfig = require('./config');
     
     res.json({
-      baseUrl: currentConfig.baseUrl,
-      mchNo: currentConfig.mchNo,
-      appId: currentConfig.appId,
-      privateKey: currentConfig.privateKey,
-      siteDomain: currentConfig.siteDomain || 'http://localhost:9219',
+      jeepay: {
+        baseUrl:    currentConfig.jeepay?.baseUrl    || '',
+        mchNo:      currentConfig.jeepay?.mchNo      || '',
+        appId:      currentConfig.jeepay?.appId      || '',
+        privateKey: currentConfig.jeepay?.privateKey || ''
+      },
+      paystack: {
+        enabled:       currentConfig.paystack?.enabled       || false,
+        secretKey:     currentConfig.paystack?.secretKey     || '',
+        baseUrl:       currentConfig.paystack?.baseUrl       || 'https://api.paystack.co',
+        currency:      currentConfig.paystack?.currency      || 'NGN',
+        channels:      currentConfig.paystack?.channels      || ['card', 'bank', 'ussd', 'mobile_money', 'bank_transfer'],
+        webhookPath:   currentConfig.paystack?.webhookPath   || '/webhook/paystack',
+        customerEmail: currentConfig.paystack?.customerEmail || ''
+      },
       epay: {
-        pid: currentConfig.epay?.pid,
-        key: currentConfig.epay?.key
+        pid: currentConfig.epay?.pid || '',
+        key: currentConfig.epay?.key || ''
       },
       server: {
-        host: currentConfig.server?.host || '0.0.0.0',
-        port: currentConfig.server?.port || 9219
+        host:       currentConfig.server?.host       || '0.0.0.0',
+        port:       currentConfig.server?.port       || 9219,
+        siteDomain: currentConfig.server?.siteDomain || 'http://localhost:9219'
       }
     });
   } catch (error) {
-    console.error('读取配置失败:', error);
+    console.error('读取配置失败 / Config read failed:', error);
     res.status(500).json({ 
       error: '读取配置失败', 
       message: error.message 
@@ -170,33 +181,29 @@ configRouter.put('/', requireAuth, (req, res) => {
   try {
     const newConfig = req.body;
 
-    // 验证必填字段
+    // 验证必填字段 / Validate required fields
     if (!newConfig.jeepay || !newConfig.jeepay.baseUrl || !newConfig.jeepay.mchNo || !newConfig.jeepay.appId || !newConfig.jeepay.privateKey) {
-      return res.status(400).json({ 
-        error: '参数不完整', 
-        message: 'Jeepay 配置项不能为空' 
-      });
+      return res.status(400).json({ error: '参数不完整', message: 'Jeepay 配置项不能为空 / Jeepay config fields required' });
     }
-
     if (!newConfig.server || !newConfig.server.siteDomain) {
-      return res.status(400).json({ 
-        error: '参数不完整', 
-        message: '网站域名不能为空' 
-      });
+      return res.status(400).json({ error: '参数不完整', message: '网站域名不能为空 / Site domain required' });
     }
-
     if (!newConfig.epay || !newConfig.epay.pid || !newConfig.epay.key) {
-      return res.status(400).json({ 
-        error: '参数不完整', 
-        message: '易支付 配置项不能为空（商户ID和密钥必填）' 
-      });
+      return res.status(400).json({ error: '参数不完整', message: '易支付 配置项不能为空（商户ID和密钥必填）/ e-pay pid and key required' });
+    }
+    if (!newConfig.server || !newConfig.server.host || !newConfig.server.port) {
+      return res.status(400).json({ error: '参数不完整', message: '服务器配置项不能为空（需要绑定IP和端口）/ Server host and port required' });
     }
 
-    if (!newConfig.server || !newConfig.server.host || !newConfig.server.port) {
-      return res.status(400).json({ 
-        error: '参数不完整', 
-        message: '服务器配置项不能为空（需要绑定IP和端口）' 
-      });
+    // 验证 Paystack 配置（仅当启用时）/ Validate Paystack config (only when enabled)
+    const paystackEnabled = !!(newConfig.paystack && newConfig.paystack.enabled);
+    if (paystackEnabled) {
+      if (!newConfig.paystack.secretKey || !/^sk_(test|live)_[A-Za-z0-9]+$/.test(newConfig.paystack.secretKey)) {
+        return res.status(400).json({
+          error: '参数错误',
+          message: 'Paystack secretKey 格式无效 / Invalid secretKey. Expected: sk_test_... or sk_live_...'
+        });
+      }
     }
 
     // 转义函数：处理单引号字符串
@@ -241,13 +248,27 @@ module.exports = {
     privateKey: \`${escapeTemplateString(newConfig.jeepay.privateKey)}\`
   },
 
-  // ========== 易支付接口配置 ==========
-  // 注意：此配置用于适配易支付接口标准，实际支付仍通过 Jeepay 处理
+  // ========== Paystack 支付平台配置 / Paystack Payment Platform Config ==========
+  // 当 enabled=true 时，支付请求将通过 Paystack 处理而非 Jeepay
+  // When enabled=true, payment requests are routed through Paystack instead of Jeepay
+  paystack: {
+    enabled:       ${paystackEnabled},
+    secretKey:     '${escapeSingleQuote((newConfig.paystack && newConfig.paystack.secretKey) || '')}',
+    baseUrl:       '${escapeSingleQuote((newConfig.paystack && newConfig.paystack.baseUrl) || 'https://api.paystack.co')}',
+    currency:      '${escapeSingleQuote((newConfig.paystack && newConfig.paystack.currency) || 'NGN')}',
+    channels:      ${JSON.stringify((newConfig.paystack && newConfig.paystack.channels) || ['card','bank','ussd','mobile_money','bank_transfer'])},
+    webhookPath:   '${escapeSingleQuote((newConfig.paystack && newConfig.paystack.webhookPath) || '/webhook/paystack')}',
+    customerEmail: '${escapeSingleQuote((newConfig.paystack && newConfig.paystack.customerEmail) || '')}'
+  },
+
+  // ========== 易支付接口配置 / e-pay Interface Config ==========
+  // 注意：此配置用于适配易支付接口标准，实际支付通过 Jeepay 或 Paystack 处理
+  // Note: This config is for e-pay interface adapter; actual payment via Jeepay or Paystack
   epay: {
-    // 商户ID（易支付格式）
+    // 商户ID（易支付格式）/ Merchant ID
     pid: '${escapeSingleQuote(newConfig.epay.pid)}',
     
-    // 商户密钥（用于 MD5 签名）
+    // 商户密钥（用于 MD5 签名）/ MD5 signing key
     key: '${escapeSingleQuote(newConfig.epay.key)}'
   },
 

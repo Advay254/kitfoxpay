@@ -1,66 +1,91 @@
-# 安全策略
+# Security Policy
 
-## 支持的版本
+## Paystack Webhook Security
 
-我们目前支持以下版本的安全更新：
+### 1. HMAC-SHA512 Signature Verification (Primary Defence)
 
-| 版本 | 支持状态          |
-| ---- | ----------------- |
-| 1.0.x | :white_check_mark: 支持 |
+Every incoming Paystack Webhook is verified using HMAC-SHA512 before any business logic runs:
 
-## 报告安全漏洞
+```javascript
+const hash = crypto
+  .createHmac('sha512', secretKey)   // secretKey = config.paystack.secretKey
+  .update(rawPayload)                 // rawPayload = express.raw() Buffer — NOT parsed JSON
+  .digest('hex');
 
-如果您发现了安全漏洞，请不要公开创建 Issue。请通过以下方式报告：
+// Constant-time comparison prevents timing attacks
+crypto.timingSafeEqual(
+  Buffer.from(hash, 'hex'),
+  Buffer.from(req.headers['x-paystack-signature'].toLowerCase(), 'hex')
+);
+```
 
-### 报告方式
+**Critical implementation detail:** The webhook route is registered with `express.raw({ type: 'application/json' })` *before* `express.json()` middleware. This preserves the raw request body as a `Buffer`. If `express.json()` parses the body first, the signature check will fail because the raw bytes are lost.
 
-1. **GitHub Security Advisory**: 在仓库的 Security 标签页中创建安全建议
-2. **邮件**: 发送到项目维护者的邮箱（如果有）
-3. **私密 Issue**: 创建私密 Issue 或通过其他私密渠道联系维护者
+The `secretKey` used here is the **same** Paystack Secret Key used for API auth (`sk_test_...` / `sk_live_...`). Paystack does not use a separate webhook secret.
 
-### 报告内容
+### 2. IP Whitelist (Defence in Depth)
 
-请包含以下信息：
-- 漏洞的详细描述
-- 复现步骤
-- 潜在影响
-- 建议的修复方案（如果有）
+Requests are checked against Paystack's known server IPs:
 
-### 响应时间
+```
+52.31.139.75
+52.49.173.169
+52.214.14.220
+```
 
-我们会在收到安全报告后的 48 小时内确认，并在确认后的合理时间内提供修复方案。
+This check **logs a warning** but does not hard-reject (to handle IP rotation by Paystack). The signature check is the authoritative gate. Both checks together form a defence-in-depth approach.
 
-## 安全最佳实践
+### 3. Always Return HTTP 200
 
-### 配置安全
+The webhook endpoint returns `200 OK` immediately *before* processing the event. This prevents Paystack from retrying events that fail due to internal errors. Processing errors are logged server-side.
 
-- **永远不要**将 `config.js` 提交到版本控制系统
-- 使用强密码作为管理后台密码
-- 定期更新密钥和密码
-- 在生产环境中使用 HTTPS
+```
+res.sendStatus(200);  // sent immediately
+// ... async processing happens after
+```
 
-### 部署安全
+### 4. Idempotency (Duplicate Event Prevention)
 
-- 不要将服务暴露在公网，除非必要
-- 使用防火墙限制访问
-- 定期更新依赖包
-- 监控异常访问和日志
+Every processed event is keyed by `data.id + "_" + data.reference` in an in-memory Set:
 
-### 密钥管理
+```javascript
+const idempotencyKey = `${data.id}_${data.reference}`;
+if (isWebhookAlreadyProcessed(idempotencyKey)) return; // skip
+markWebhookProcessed(idempotencyKey);
+```
 
-- 妥善保管 Jeepay 的商户私钥
-- 不要在不安全的环境中存储密钥
-- 定期轮换密钥
+The cache evicts its oldest entry when it reaches 10,000 items to prevent unbounded memory growth.
 
-## 已知安全问题
+**Production note:** For multi-process deployments or instances that restart frequently, replace the in-memory Set with a Redis key or database record with a TTL of at least 7 days (to cover Paystack's maximum retry window).
 
-目前没有已知的安全问题。如果发现新的安全问题，我们会及时更新此文档。
+### 5. Amount Re-Verification (Anti-Tampering)
 
-## 安全更新
+On `charge.success` events, the amount from the webhook payload is **never trusted alone**. The transaction is re-verified via `GET /transaction/verify/{reference}` and the API-returned amount is compared against the webhook amount:
 
-安全更新会通过以下方式发布：
-- GitHub Releases
-- 安全建议（Security Advisory）
-- README.md 中的更新说明
+```javascript
+const txData = await paystackClient.verifyTransaction(reference);
+if (txData.status !== 'success') return;                     // reject if not success
+if (txData.amount !== webhookData.amount) return;            // reject if amount mismatch
+```
 
-请及时关注项目更新，确保使用最新版本。
+This prevents a scenario where a malicious actor crafts a fake webhook claiming a higher amount was paid.
+
+---
+
+## Secret Key Protection
+
+- `config.paystack.secretKey` is loaded server-side only and is **never** sent to the browser
+- The Admin UI saves/loads config via authenticated API (`/api/config`) which requires session auth
+- `config.js` should be in `.gitignore` (already present in the original repo)
+- Logs never print the full Secret Key; only the key prefix is shown during startup validation
+
+## Input Sanitisation
+
+- `email` — validated with regex before sending to Paystack
+- `amount` — coerced to `Number`, validated as finite and positive, rounded to integer
+- `reference` — sanitised: non-alphanumeric chars (except `-`, `.`, `=`) are replaced with `_`; truncated to 255 chars
+- No user-provided values are passed to `eval()`, `new Function()`, or shell commands
+
+## Reporting a Vulnerability
+
+Please open a private GitHub Security Advisory or email the maintainer directly. Do not open public issues for security vulnerabilities.

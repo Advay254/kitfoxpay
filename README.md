@@ -12,6 +12,7 @@
 - 🔒 **开源可控**：底层使用开源 Jeepay 支付平台，支持自建部署，数据完全可控
 - 🔌 **即插即用**：兼容易支付接口标准，无缝替换第三方易支付平台
 - 🎯 **可扩展架构**：采用适配器模式，后续可以轻松接入更多支付通道
+- 🌍 **Paystack 支持**：内置 Paystack 网关适配器，支持非洲主流支付渠道（NGN/GHS/ZAR/KES 等货币）
 - 🎨 **可视化配置**：提供 Web 管理界面，无需手动编辑配置文件
 
 ## 📋 目录
@@ -189,23 +190,26 @@ KitfoxPay 完全兼容易支付接口标准：
 └────────┬────────┘
          │ 易支付接口调用
          ▼
-┌─────────────────┐
-│   KitfoxPay     │
-│  (适配器网关)    │
-│                 │
-│  ┌───────────┐  │
-│  │ EpayAdapter│ │  ← 易支付接口适配层
-│  └─────┬─────┘  │
-│  ┌─────▼─────┐  │
-│  │JeepayClient│ │  ← Jeepay 客户端
-│  └─────┬─────┘  │
-└────────┼────────┘
-         │ Jeepay API
-         ▼
-┌─────────────────┐
-│   Jeepay        │
-│  (支付平台)      │
-└─────────────────┘
+┌──────────────────────────────────┐
+│   KitfoxPay  (适配器网关)         │
+│                                  │
+│  ┌────────────────────────────┐  │
+│  │       EpayAdapter          │  │  ← 易支付接口适配层
+│  └──────────┬─────────────────┘  │
+│             │ 按配置路由           │
+│      ┌──────┴──────┐             │
+│      ▼             ▼             │
+│  ┌──────────┐ ┌──────────────┐  │
+│  │ Jeepay   │ │  Paystack    │  │  ← 双网关支持
+│  │ Client   │ │  Client      │  │
+│  └────┬─────┘ └──────┬───────┘  │
+└───────┼───────────────┼──────────┘
+        │ Jeepay API    │ Paystack API
+        ▼               ▼
+┌──────────────┐ ┌──────────────────┐
+│   Jeepay     │ │   Paystack       │
+│  (支付平台)   │ │  (非洲支付网关)   │
+└──────────────┘ └──────────────────┘
 ```
 
 ### 核心模块
@@ -249,6 +253,38 @@ server: {
 }
 ```
 
+### Paystack 配置（可选）
+
+> 当 `enabled: true` 时，所有支付请求通过 Paystack 处理，Jeepay 配置仍需填写但不用于支付。
+
+```javascript
+paystack: {
+  enabled:       false,                       // 是否启用 Paystack（默认关闭，不影响 Jeepay 用户）
+  secretKey:     'sk_test_xxxxxxxxxxxx',      // Paystack 密钥（sk_test_... 或 sk_live_...）
+  baseUrl:       'https://api.paystack.co',   // API 地址（通常无需修改）
+  currency:      'NGN',                       // 货币代码：NGN / GHS / ZAR / KES / USD 等
+  channels:      ['card', 'bank', 'ussd', 'mobile_money', 'bank_transfer'],
+  webhookPath:   '/webhook/paystack',         // Webhook 接收路径
+  customerEmail: 'customer@example.com'       // 默认客户邮箱（请求未提供时使用）
+}
+```
+
+**Paystack Webhook 配置步骤：**
+
+1. 登录 [Paystack Dashboard](https://dashboard.paystack.com) → Settings → API Keys & Webhooks
+2. 在 Webhook URL 中填入：`https://你的域名/webhook/paystack`
+3. 保存后，Paystack 会在每次支付事件后向该地址发送通知
+
+**e-pay 参数与 Paystack 参数映射：**
+
+| 易支付参数 | Paystack 参数 | 说明 |
+|---|---|---|
+| `out_trade_no` | `reference` | 唯一订单号（仅限字母、数字、`-`、`.`、`=`）|
+| `money` | `amount` | 自动转换为最小货币单位（×100）|
+| `return_url` | `callback_url` | 支付后跳转地址 |
+| `notify_url` | `metadata.notify_url` | 存入 metadata，Webhook 时取出转发 |
+| `name` | `metadata.custom_fields` | 商品名称 |
+
 ## 💡 使用场景
 
 - **NewAPI 用户**：希望使用 Jeepay 替代易支付，实现平滑升级
@@ -262,15 +298,18 @@ server: {
 ```
 KitfoxPay/
 ├── index.js              # 主入口文件
-├── epay.js               # 易支付适配器
+├── epay.js               # 易支付适配器（支持 Jeepay / Paystack 双路由）
 ├── jeepay/               # Jeepay 客户端模块
 │   ├── index.js
 │   └── jeepay.js
+├── paystack/             # Paystack 客户端模块（新增）
+│   └── paystack.js       # Paystack API 客户端 + Webhook 验证
 ├── admin.js              # 管理后台 API
-├── config.js             # 配置文件
+├── config.js             # 配置文件（含 paystack 配置块）
 ├── config.example.js     # 配置示例
+├── SECURITY.md           # 安全说明（Webhook 验证机制）
 ├── public/               # 静态文件
-│   └── index.html        # Web 管理界面
+│   └── index.html        # Web 管理界面（含 Paystack 配置 Tab）
 └── package.json          # 项目依赖
 ```
 
@@ -318,7 +357,7 @@ open http://localhost:9219
 
 ## 📅 Roadmap
 
-- [ ] 支持更多支付通道
+- [x] 支持更多支付通道（Paystack 已集成 / Paystack integrated）
 - [ ] 增强管理后台功能（订单查询、统计报表）
 - [ ] 支持多商户配置
 - [ ] 添加监控和日志系统
