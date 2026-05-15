@@ -19,24 +19,24 @@ try {
   console.warn('[KitfoxPay] paystack/paystack.js 未找到，Paystack 功能不可用 / Paystack module not found, Paystack disabled');
 }
 
-// ─────────────────────────────────────────────────────────────
-// 幂等性去重集合（防止重复处理 Webhook）/ Idempotency set (prevent duplicate webhook processing)
-// 生产环境建议替换为 Redis 或数据库 / Replace with Redis/DB in production for persistence across restarts
-// ─────────────────────────────────────────────────────────────
-const processedWebhookIds = new Set();
-const MAX_IDEMPOTENCY_CACHE = 10000; // 防止内存无限增长 / Prevent unbounded memory growth
+// ── Webhook 幂等性存储（PostgreSQL 或内存回退）/ Webhook idempotency store (PostgreSQL or memory fallback) ──
+const IdempotencyStore = require('./db/store');
 
-function markWebhookProcessed(id) {
-  if (processedWebhookIds.size >= MAX_IDEMPOTENCY_CACHE) {
-    // 清除最旧的条目（Set 保持插入顺序）/ Clear oldest entries
-    const firstKey = processedWebhookIds.values().next().value;
-    processedWebhookIds.delete(firstKey);
-  }
-  processedWebhookIds.add(String(id));
+// ─────────────────────────────────────────────────────────────
+// Webhook 幂等性存储 / Webhook idempotency store
+// DATABASE_URL 已设置 → PostgreSQL 持久化（Supabase / Aiven / Neon / Railway 等）
+// DATABASE_URL 未设置 → 进程内 Set 回退（重启后失效）
+// DATABASE_URL set     → PostgreSQL persistent (any provider)
+// DATABASE_URL not set → in-process Set fallback (cleared on restart)
+// ─────────────────────────────────────────────────────────────
+const idempotencyStore = new IdempotencyStore(process.env.DATABASE_URL);
+
+async function markWebhookProcessed(id) {
+  await idempotencyStore.mark(id);
 }
 
-function isWebhookAlreadyProcessed(id) {
-  return processedWebhookIds.has(String(id));
+async function isWebhookAlreadyProcessed(id) {
+  return idempotencyStore.has(id);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -318,7 +318,7 @@ app.post(paystackWebhookPath, async (req, res) => {
 
     // ── 2. 幂等性检查 / Idempotency check ──
     const idempotencyKey = `${data.id || ''}_${data.reference || ''}`;
-    if (isWebhookAlreadyProcessed(idempotencyKey)) {
+    if (await isWebhookAlreadyProcessed(idempotencyKey)) {
       console.warn('[Paystack Webhook] ⚠ 重复事件，跳过处理 / Duplicate event, skipping:', idempotencyKey);
       return;
     }
@@ -333,7 +333,7 @@ app.post(paystackWebhookPath, async (req, res) => {
     }
 
     // ── 4. 标记已处理 / Mark as processed ──
-    markWebhookProcessed(idempotencyKey);
+    await markWebhookProcessed(idempotencyKey);
 
   } catch (error) {
     console.error('[Paystack Webhook] 处理失败 / Processing error:', error.message);
@@ -563,6 +563,8 @@ app.post('/api/refund/notify', async (req, res) => {
 // 启动服务器 / Start server
 // ─────────────────────────────────────────────────────────────
 app.listen(PORT, config.server.host, () => {
+  console.log('  DB 幂等性 / Idempotency:');
+  console.log(`    ${process.env.DATABASE_URL ? '✅ PostgreSQL（持久化 / persistent）' : '⚠ 内存模式（重启后失效）— 设置 DATABASE_URL 启用持久化'}`);
   console.log('=================================');
   console.log('支付平台 API 服务已启动 / Payment Platform API Service Started');
   console.log(`绑定地址 / Bind: ${config.server.host}:${PORT}`);
