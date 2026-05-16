@@ -479,38 +479,35 @@
             <div id="tabPaystack" class="tab-pane">
                 <div class="section">
                     <div class="section-header">
-                        <span><span class="icon">🌍</span> Paystack 网关配置 / Paystack Gateway Config</span>
+                        <span id="i18n-sh-paystack"><span class="icon">🌍</span> Paystack 网关配置</span>
                     </div>
                     <div class="section-content">
                         <div style="padding: 12px; background: #e8f5e9; border-left: 3px solid #4caf50; border-radius: 4px; margin-bottom: 16px; font-size: 13px;">
-                            💡 <strong>说明 / Note：</strong>
-                            启用 Paystack 后，所有支付请求将通过 Paystack 处理，Jeepay 配置仍需填写但不会用于支付。
-                            当前支持货币：NGN（尼日利亚奈拉）、GHS（加纳塞地）、ZAR（南非兰特）、KES（肯尼亚先令）等。<br>
-                            After enabling Paystack, all payment requests will route through Paystack. Jeepay config is still required but not used for payments.
+                            <span data-i18n-html="note-paystack">💡 <strong>说明 / Note：</strong> 启用 Paystack 后，所有支付请求将通过 Paystack 处理，Jeepay 配置仍需填写但不会用于支付。当前支持货币：NGN（尼日利亚奈拉）、GHS（加纳塞地）、ZAR（南非兰特）、KES（肯尼亚先令）等。</span>
                         </div>
 
                         <div class="form-group">
                             <label>
                                 <input type="checkbox" id="paystackEnabled" style="margin-right: 8px; width: auto;">
-                                启用 Paystack 网关 / Enable Paystack Gateway
+                                <span data-i18n="lbl-paystack-enable">启用 Paystack 网关</span>
                             </label>
-                            <div class="help-text">启用后支付通过 Paystack 处理 / When enabled, payments route through Paystack</div>
+                            <div class="help-text" data-i18n="ht-paystack-enable">启用后支付通过 Paystack 处理</div>
                         </div>
 
                         <div class="form-group">
                             <label>Paystack Secret Key <span style="color:#e53935">*</span></label>
                             <div style="position:relative">
                                 <input type="password" id="paystackSecretKey"
-                                    placeholder="在此粘贴您的 Paystack 密钥 / Paste your Paystack secret key here"
+                                    placeholder="在此粘贴您的 Paystack 密钥" data-i18n-ph="ph-paystack-key"
                                     style="width:100%; padding:10px 40px 10px 12px; border:1px solid #ddd; border-radius:6px; font-family: monospace;">
                                 <span onclick="togglePassword('paystackSecretKey')"
                                     style="position:absolute; right:10px; top:50%; transform:translateY(-50%); cursor:pointer; color:#666;">👁</span>
                             </div>
-                            <div class="help-text">格式 / Format: sk_test_... (测试 / test) 或 / or sk_live_... (正式 / live)。切勿泄露！/ Never expose this key!</div>
+                            <div class="help-text" data-i18n="ht-paystack-key">格式：sk_test_... (测试) 或 sk_live_... (正式)。切勿泄露！</div>
                         </div>
 
                         <div class="form-group">
-                            <label>货币代码 / Currency Code</label>
+                            <label data-i18n="lbl-paystack-currency">货币代码</label>
                             <select id="paystackCurrency" style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px;">
                                 <option value="NGN">NGN — 尼日利亚奈拉 / Nigerian Naira</option>
                                 <option value="GHS">GHS — 加纳塞地 / Ghanaian Cedi</option>
@@ -520,38 +517,38 @@
                                 <option value="GBP">GBP — 英镑 / British Pound</option>
                                 <option value="EUR">EUR — 欧元 / Euro</option>
                             </select>
-                            <div class="help-text">金额将自动转换为最小货币单位（×100）/ Amount will be auto-converted to subunit (×100)</div>
+                            <div class="help-text" data-i18n="ht-paystack-currency">金额将自动转换为最小货币单位（×100）</div>
                         </div>
 
                         <div class="form-group">
-                            <label>默认客户邮箱 / Default Customer Email</label>
+                            <label data-i18n="lbl-paystack-email">默认客户邮箱</label>
                             <input type="email" id="paystackCustomerEmail"
                                 placeholder="customer@example.com"
                                 style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px;">
-                            <div class="help-text">当支付请求未提供邮箱时使用此默认值 / Used when payment request does not include email</div>
+                            <div class="help-text" data-i18n="ht-paystack-email">当支付请求未提供邮箱时使用此默认值</div>
                         </div>
 
                         <div class="form-group">
-                            <label>Webhook 路径 / Webhook Path</label>
+                            <label data-i18n="lbl-paystack-webhook-path">Webhook 路径</label>
                             <input type="text" id="paystackWebhookPath"
                                 placeholder="/webhook/paystack"
                                 style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-family: monospace;">
                             <div class="help-text">
-                                在 Paystack Dashboard → Settings → API Keys & Webhooks 中设置 Webhook URL 为：<br>
+                                <span data-i18n="ht-paystack-webhook-path">在 Paystack Dashboard → Settings → API Keys & Webhooks 中设置 Webhook URL 为：</span><br>
                                 <code id="webhookUrlPreview" style="background:#f5f5f5; padding:2px 6px; border-radius:3px; font-size:12px;"></code>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label>API 基础地址 / API Base URL</label>
+                            <label data-i18n="lbl-paystack-baseurl">API 基础地址</label>
                             <input type="text" id="paystackBaseUrl"
                                 placeholder="https://api.paystack.co"
                                 style="width:100%; padding:10px 12px; border:1px solid #ddd; border-radius:6px; font-family: monospace;">
-                            <div class="help-text">通常无需修改 / Usually no need to change this</div>
+                            <div class="help-text" data-i18n="ht-paystack-baseurl">通常无需修改</div>
                         </div>
 
                         <div class="form-group">
-                            <label>支付渠道 / Payment Channels</label>
+                            <label data-i18n="lbl-paystack-channels">支付渠道</label>
                             <div style="display:flex; flex-wrap:wrap; gap:12px; margin-top:8px;">
                                 <label style="display:flex;align-items:center;gap:6px;font-weight:normal">
                                     <input type="checkbox" class="paystack-channel" value="card" checked> 💳 Card
@@ -576,36 +573,36 @@
                 <!-- Paystack 测试 / Paystack Test Section -->
                 <div class="section">
                     <div class="section-header">
-                        <span><span class="icon">🧪</span> Paystack 接口调试 / Paystack API Debug</span>
+                        <span id="i18n-sh-ps-debug"><span class="icon">🧪</span> Paystack 接口调试</span>
                     </div>
                     <div class="section-content">
                         <div style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:16px;">
-                            <button class="btn btn-secondary" onclick="showPaystackTest('initialize')">初始化交易 / Initialize</button>
-                            <button class="btn btn-secondary" onclick="showPaystackTest('verify')">验证交易 / Verify</button>
-                            <button class="btn btn-secondary" onclick="showPaystackTest('webhook')">模拟 Webhook / Simulate</button>
+                            <button class="btn btn-secondary" data-i18n="btn-ps-init" onclick="showPaystackTest('initialize')">初始化交易</button>
+                            <button class="btn btn-secondary" data-i18n="btn-ps-verify" onclick="showPaystackTest('verify')">验证交易</button>
+                            <button class="btn btn-secondary" data-i18n="btn-ps-simulate" onclick="showPaystackTest('webhook')">模拟 Webhook</button>
                         </div>
 
                         <!-- Initialize test -->
                         <div id="paystackInitTest" style="display:none;">
                             <div class="form-group">
-                                <label>out_trade_no（订单号 / Order No）</label>
+                                <label data-i18n="lbl-ps-order-no">out_trade_no（订单号）</label>
                                 <input type="text" id="psTestOrderNo" placeholder="TEST_PS_1234567890" value="TEST_PS_">
                             </div>
                             <div class="form-group">
-                                <label>金额（元）/ Amount (yuan)</label>
+                                <label data-i18n="lbl-ps-amount">金额（元）</label>
                                 <input type="number" id="psTestAmount" placeholder="10.00" value="10.00" step="0.01">
                             </div>
                             <div class="form-group">
-                                <label>商品名称 / Product Name</label>
+                                <label data-i18n="lbl-ps-product-name">商品名称</label>
                                 <input type="text" id="psTestName" placeholder="测试商品 / Test Product" value="测试商品">
                             </div>
                             <div class="form-group">
                                 <label>notify_url</label>
                                 <input type="text" id="psTestNotifyUrl" placeholder="https://your-site.com/notify">
                             </div>
-                            <button class="btn btn-primary" onclick="testPaystackInitialize()" style="margin-top:8px;">🚀 测试初始化 / Test Initialize</button>
+                            <button class="btn btn-primary" data-i18n="btn-ps-test-init" onclick="testPaystackInitialize()" style="margin-top:8px;">🚀 测试初始化</button>
                             <div id="psInitResult" style="margin-top:15px; display:none;">
-                                <strong>结果 / Result:</strong>
+                                <strong data-i18n="lbl-result">结果</strong>
                                 <pre id="psInitResultContent" style="white-space:pre-wrap; word-wrap:break-word; font-size:12px; max-height:400px; overflow-y:auto; background:#f5f5f5; padding:12px; border-radius:6px; margin-top:8px;"></pre>
                             </div>
                         </div>
@@ -613,12 +610,12 @@
                         <!-- Verify test -->
                         <div id="paystackVerifyTest" style="display:none;">
                             <div class="form-group">
-                                <label>交易参考号 / Transaction Reference</label>
+                                <label data-i18n="lbl-ps-reference">交易参考号</label>
                                 <input type="text" id="psTestReference" placeholder="out_trade_no 或 Paystack reference">
                             </div>
-                            <button class="btn btn-primary" onclick="testPaystackVerify()" style="margin-top:8px;">🔍 验证交易 / Verify</button>
+                            <button class="btn btn-primary" data-i18n="btn-ps-test-verify" onclick="testPaystackVerify()" style="margin-top:8px;">🔍 验证交易</button>
                             <div id="psVerifyResult" style="margin-top:15px; display:none;">
-                                <strong>结果 / Result:</strong>
+                                <strong data-i18n="lbl-result">结果</strong>
                                 <pre id="psVerifyResultContent" style="white-space:pre-wrap; word-wrap:break-word; font-size:12px; max-height:400px; overflow-y:auto; background:#f5f5f5; padding:12px; border-radius:6px; margin-top:8px;"></pre>
                             </div>
                         </div>
@@ -626,12 +623,11 @@
                         <!-- Webhook simulation test -->
                         <div id="paystackWebhookTest" style="display:none;">
                             <div style="padding:12px; background:#fff3e0; border-left:3px solid #ff9800; border-radius:4px; margin-bottom:16px; font-size:13px;">
-                                ⚠ 此测试发送不含有效签名的模拟 Webhook，服务器将拒绝（401）。用于验证拒绝逻辑是否正常工作。<br>
-                                This test sends a simulated webhook without a valid signature; server should reject (401/ignored). Tests rejection logic.
+                                <span data-i18n-html="note-ps-webhook-warn">⚠ 此测试发送不含有效签名的模拟 Webhook，服务器将拒绝（401）。用于验证拒绝逻辑是否正常工作。</span>
                             </div>
-                            <button class="btn btn-secondary" onclick="testPaystackWebhookSimulate()">📡 发送模拟 Webhook / Send Simulated Webhook</button>
+                            <button class="btn btn-secondary" data-i18n="btn-ps-send-webhook" onclick="testPaystackWebhookSimulate()">📡 发送模拟 Webhook</button>
                             <div id="psWebhookResult" style="margin-top:15px; display:none;">
-                                <strong>结果 / Result:</strong>
+                                <strong data-i18n="lbl-result">结果</strong>
                                 <pre id="psWebhookResultContent" style="white-space:pre-wrap; word-wrap:break-word; font-size:12px; max-height:300px; overflow-y:auto; background:#f5f5f5; padding:12px; border-radius:6px; margin-top:8px;"></pre>
                             </div>
                         </div>
@@ -639,36 +635,36 @@
                 </div>
 
                 <div style="margin-top:20px; display:flex; gap:10px; flex-wrap:wrap;">
-                    <button type="button" class="btn btn-secondary" onclick="loadConfig()">🔄 重新加载 / Reload</button>
-                    <button type="button" class="btn btn-primary" onclick="saveConfig()">💾 保存配置 / Save Config</button>
+                    <button type="button" class="btn btn-secondary" data-i18n="btn-reload" onclick="loadConfig()">🔄 重新加载</button>
+                    <button type="button" class="btn btn-primary" data-i18n="btn-save" onclick="saveConfig()">💾 保存配置</button>
                 </div>
             </div>
 
             <div id="tabTests" class="tab-pane">
                 <!-- 测试模块 -->
                 <div style="margin-top: 10px;">
-                    <h2 style="margin-bottom: 20px; color: #333;">🧪 接口测试</h2>
+                    <h2 style="margin-bottom: 20px; color: #333;" data-i18n="sh-tests-title">🧪 接口测试</h2>
 
                     <!-- Jeepay 测试模块 -->
                     <div class="section">
                         <div class="section-header">
-                            <span><span class="icon">🚀</span> Jeepay 接口测试</span>
+                            <span id="i18n-sh-jeepay-test"><span class="icon">🚀</span> Jeepay 接口测试</span>
                         </div>
                         <div class="section-content">
                             <div style="margin-bottom: 20px;">
-                                <button type="button" class="btn btn-secondary" onclick="showJeepayTest('unified-order')" style="margin-right: 10px;">统一下单测试</button>
-                                <button type="button" class="btn btn-secondary" onclick="showJeepayTest('query-order')">查询订单测试</button>
+                                <button type="button" class="btn btn-secondary" data-i18n="btn-jeepay-unified-order" onclick="showJeepayTest('unified-order')" style="margin-right: 10px;">统一下单测试</button>
+                                <button type="button" class="btn btn-secondary" data-i18n="btn-jeepay-query-order" onclick="showJeepayTest('query-order')">查询订单测试</button>
                             </div>
 
                         <!-- 统一下单测试 -->
                         <div id="jeepayUnifiedOrderTest" style="display: none;">
-                            <h3 style="margin-bottom: 15px; font-size: 16px;">统一下单测试</h3>
+                            <h3 style="margin-bottom: 15px; font-size: 16px;" data-i18n="sh-jeepay-unified-order">统一下单测试</h3>
                             <div class="form-group">
-                                <label>商户订单号</label>
+                                <label data-i18n="lbl-mch-order-no">商户订单号</label>
                                 <input type="text" id="jeepayTestMchOrderNo" placeholder="TEST_ORDER_1234567890" value="TEST_ORDER_">
                             </div>
                             <div class="form-group">
-                                <label>支付方式</label>
+                                <label data-i18n="lbl-pay-method">支付方式</label>
                                 <select id="jeepayTestWayCode" onchange="updateJeepayChannelExtraHelp()" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
                                     <optgroup label="聚合支付">
                                         <option value="QR_CASHIER">聚合扫码(用户扫商家)</option>
@@ -697,43 +693,43 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>支付金额（分）</label>
+                                <label data-i18n="lbl-amount-fen">支付金额（分）</label>
                                 <input type="number" id="jeepayTestAmount" placeholder="100" value="100">
                             </div>
                             <div class="form-group">
-                                <label>商品标题</label>
+                                <label data-i18n="lbl-product-title">商品标题</label>
                                 <input type="text" id="jeepayTestSubject" placeholder="测试商品" value="测试商品">
                             </div>
                             <div class="form-group">
-                                <label>商品描述</label>
+                                <label data-i18n="lbl-product-desc">商品描述</label>
                                 <input type="text" id="jeepayTestBody" placeholder="测试商品描述" value="测试商品描述">
                             </div>
                             <div class="form-group">
-                                <label>渠道扩展参数 (channelExtra)</label>
-                                <div id="jeepayChannelExtraHelp" style="padding: 10px; background: #f0f7ff; border-left: 3px solid #2196F3; margin-bottom: 10px; border-radius: 4px; font-size: 13px; line-height: 1.6;">
+                                <label data-i18n="lbl-channel-extra">渠道扩展参数 (channelExtra)</label>
+                                <div id="jeepayChannelExtraHelp" style="padding: 10px; background: #f0f7ff; border-left: 3px solid #2196F3; margin-bottom: 10px; border-radius: 4px; font-size: 13px; line-height: 1.6;" data-i18n="ht-channel-extra-hint">
                                     <strong>提示：</strong>根据选择的支付方式，channelExtra 参数要求不同，请查看下方说明。
                                 </div>
                                 <div id="jeepayChannelExtraInputs" style="display: none;">
                                     <!-- 条码支付 -->
                                     <div id="jeepayChannelExtraBar" style="display: none;">
-                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;">付款码 (auth_code) <span style="color: red;">*必填</span></label>
+                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;" data-i18n-html="lbl-auth-code">付款码 (auth_code) <span style="color: red;">*必填</span></label>
                                         <input type="text" id="jeepayChannelExtraAuthCode" placeholder="请输入用户的付款码，如：13920933111042" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
                                     </div>
                                     <!-- JSAPI 支付 -->
                                     <div id="jeepayChannelExtraJSAPI" style="display: none;">
-                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;">用户标识</label>
+                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;" data-i18n="lbl-user-id">用户标识</label>
                                         <div id="jeepayChannelExtraBuyerUserId" style="display: none;">
-                                            <label style="font-size: 12px; color: #666;">支付宝用户ID (buyerUserId) <span style="color: red;">*必填</span></label>
+                                            <label style="font-size: 12px; color: #666;" data-i18n-html="lbl-buyer-user-id">支付宝用户ID (buyerUserId) <span style="color: red;">*必填</span></label>
                                             <input type="text" id="jeepayChannelExtraBuyerUserIdInput" placeholder="请输入支付宝用户ID，如：2088702585070844" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px; margin-bottom: 10px;">
                                         </div>
                                         <div id="jeepayChannelExtraOpenid" style="display: none;">
-                                            <label style="font-size: 12px; color: #666;">微信OpenID (openid) <span style="color: red;">*必填</span></label>
+                                            <label style="font-size: 12px; color: #666;" data-i18n-html="lbl-openid">微信OpenID (openid) <span style="color: red;">*必填</span></label>
                                             <input type="text" id="jeepayChannelExtraOpenidInput" placeholder="请输入微信OpenID，如：o6BcIwvSiRpfS8e_UyfQNrYuk2LI" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
                                         </div>
                                     </div>
                                     <!-- 扫码支付 -->
                                     <div id="jeepayChannelExtraQR" style="display: none;">
-                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;">支付数据类型 (payDataType) <span style="color: #999;">可选</span></label>
+                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;" data-i18n-html="lbl-pay-data-type">支付数据类型 (payDataType) <span style="color: #999;">可选</span></label>
                                         <select id="jeepayChannelExtraPayDataType" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
                                             <option value="">默认 (codeUrl)</option>
                                             <option value="codeUrl">codeUrl - 二维码地址</option>
@@ -742,7 +738,7 @@
                                     </div>
                                     <!-- WAP/PC 支付 -->
                                     <div id="jeepayChannelExtraWAP" style="display: none;">
-                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;">支付数据类型 (payDataType) <span style="color: #999;">可选</span></label>
+                                        <label style="font-size: 13px; color: #666; margin-bottom: 5px;" data-i18n-html="lbl-pay-data-type">支付数据类型 (payDataType) <span style="color: #999;">可选</span></label>
                                         <select id="jeepayChannelExtraPayDataTypeWAP" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
                                             <option value="">默认 (payUrl)</option>
                                             <option value="payUrl">payUrl - 支付链接</option>
@@ -751,32 +747,32 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="help-text" style="margin-top: 10px; font-size: 12px; color: #666;">
+                                <div class="help-text" style="margin-top: 10px; font-size: 12px; color: #666;" data-i18n="ht-channel-extra-tip">
                                     提示：channelExtra 参数会根据选择的支付方式自动构建 JSON 格式
                                 </div>
                             </div>
-                            <button type="button" class="btn btn-primary" onclick="testJeepayUnifiedOrder()">执行测试</button>
+                            <button type="button" class="btn btn-primary" data-i18n="btn-run-test" onclick="testJeepayUnifiedOrder()">执行测试</button>
                             <div id="jeepayUnifiedOrderResult" style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;">
-                                <h4 style="margin-bottom: 10px;">测试结果：</h4>
+                                <h4 style="margin-bottom: 10px;" data-i18n="sh-test-result">测试结果：</h4>
                                 <pre id="jeepayUnifiedOrderResultContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto;"></pre>
                             </div>
                         </div>
 
                         <!-- 查询订单测试 -->
                         <div id="jeepayQueryOrderTest" style="display: none;">
-                            <h3 style="margin-bottom: 15px; font-size: 16px;">查询订单测试</h3>
+                            <h3 style="margin-bottom: 15px; font-size: 16px;" data-i18n="sh-jeepay-query-order">查询订单测试</h3>
                             <div class="form-group">
-                                <label>支付订单号（可选）</label>
+                                <label data-i18n="lbl-pay-order-id-opt">支付订单号（可选）</label>
                                 <input type="text" id="jeepayTestPayOrderId" placeholder="支付订单号">
                             </div>
                             <div class="form-group">
-                                <label>商户订单号（可选）</label>
+                                <label data-i18n="lbl-mch-order-no-opt">商户订单号（可选）</label>
                                 <input type="text" id="jeepayTestMchOrderNoQuery" placeholder="商户订单号">
                             </div>
-                            <div class="help-text">支付订单号和商户订单号至少填写一个</div>
-                            <button type="button" class="btn btn-primary" onclick="testJeepayQueryOrder()">执行测试</button>
+                            <div class="help-text" data-i18n="ht-at-least-one-jeepay">支付订单号和商户订单号至少填写一个</div>
+                            <button type="button" class="btn btn-primary" data-i18n="btn-run-test" onclick="testJeepayQueryOrder()">执行测试</button>
                             <div id="jeepayQueryOrderResult" style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;">
-                                <h4 style="margin-bottom: 10px;">测试结果：</h4>
+                                <h4 style="margin-bottom: 10px;" data-i18n="sh-test-result">测试结果：</h4>
                                 <pre id="jeepayQueryOrderResultContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto;"></pre>
                             </div>
                         </div>
@@ -786,25 +782,25 @@
                 <!-- 易支付测试模块 -->
                 <div class="section" style="margin-top: 20px;">
                     <div class="section-header">
-                        <span><span class="icon">💳</span> 易支付接口测试</span>
+                        <span id="i18n-sh-epay-test"><span class="icon">💳</span> 易支付接口测试</span>
                     </div>
                     <div class="section-content">
                         <div style="margin-bottom: 20px;">
-                            <button type="button" class="btn btn-secondary" onclick="showEpayTest('create-order')" style="margin-right: 10px;">创建订单测试</button>
-                            <button type="button" class="btn btn-secondary" onclick="showEpayTest('submit-order')" style="margin-right: 10px;">提交订单测试</button>
-                            <button type="button" class="btn btn-secondary" onclick="showEpayTest('query-order')" style="margin-right: 10px;">查询订单测试</button>
-                            <button type="button" class="btn btn-secondary" onclick="showEpayTest('refund')">退款测试</button>
+                            <button type="button" class="btn btn-secondary" data-i18n="btn-epay-create" onclick="showEpayTest('create-order')" style="margin-right: 10px;">创建订单测试</button>
+                            <button type="button" class="btn btn-secondary" data-i18n="btn-epay-submit" onclick="showEpayTest('submit-order')" style="margin-right: 10px;">提交订单测试</button>
+                            <button type="button" class="btn btn-secondary" data-i18n="btn-epay-query" onclick="showEpayTest('query-order')" style="margin-right: 10px;">查询订单测试</button>
+                            <button type="button" class="btn btn-secondary" data-i18n="btn-epay-refund" onclick="showEpayTest('refund')">退款测试</button>
                         </div>
 
                         <!-- 创建订单测试 -->
                         <div id="epayCreateOrderTest" style="display: none;">
-                            <h3 style="margin-bottom: 15px; font-size: 16px;">创建订单测试（mapi.php）</h3>
+                            <h3 style="margin-bottom: 15px; font-size: 16px;" data-i18n="sh-epay-create">创建订单测试（mapi.php）</h3>
                             <div class="form-group">
-                                <label>商户订单号</label>
+                                <label data-i18n="lbl-mch-order-no">商户订单号</label>
                                 <input type="text" id="epayTestOutTradeNo" placeholder="TEST_ORDER_1234567890" value="TEST_ORDER_">
                             </div>
                             <div class="form-group">
-                                <label>支付方式</label>
+                                <label data-i18n="lbl-pay-method">支付方式</label>
                                 <select id="epayTestType" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
                                     <optgroup label="聚合支付">
                                         <option value="qr_cashier">聚合扫码(用户扫商家)</option>
@@ -839,33 +835,33 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>支付金额（元）</label>
+                                <label data-i18n="lbl-amount-yuan">支付金额（元）</label>
                                 <input type="text" id="epayTestMoney" placeholder="0.01" value="0.01">
                             </div>
                             <div class="form-group">
-                                <label>商品名称</label>
+                                <label data-i18n="lbl-product-name">商品名称</label>
                                 <input type="text" id="epayTestName" placeholder="测试商品" value="测试商品">
                             </div>
                             <div class="form-group">
-                                <label>异步通知地址（可选）</label>
+                                <label data-i18n="lbl-notify-url-opt">异步通知地址（可选）</label>
                                 <input type="text" id="epayTestNotifyUrl" placeholder="http://example.com/notify">
                             </div>
-                            <button type="button" class="btn btn-primary" onclick="testMyZWFCreateOrder()">执行测试</button>
+                            <button type="button" class="btn btn-primary" data-i18n="btn-run-test" onclick="testMyZWFCreateOrder()">执行测试</button>
                             <div id="epayCreateOrderResult" style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;">
-                                <h4 style="margin-bottom: 10px;">测试结果：</h4>
+                                <h4 style="margin-bottom: 10px;" data-i18n="sh-test-result">测试结果：</h4>
                                 <pre id="epayCreateOrderResultContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto;"></pre>
                             </div>
                         </div>
 
                         <!-- 提交订单测试 -->
                         <div id="epaySubmitOrderTest" style="display: none;">
-                            <h3 style="margin-bottom: 15px; font-size: 16px;">提交订单测试（submit.php）</h3>
+                            <h3 style="margin-bottom: 15px; font-size: 16px;" data-i18n="sh-epay-submit">提交订单测试（submit.php）</h3>
                             <div class="form-group">
-                                <label>商户订单号</label>
+                                <label data-i18n="lbl-mch-order-no">商户订单号</label>
                                 <input type="text" id="epayTestOutTradeNoSubmit" placeholder="TEST_ORDER_1234567890" value="TEST_ORDER_">
                             </div>
                             <div class="form-group">
-                                <label>支付方式</label>
+                                <label data-i18n="lbl-pay-method">支付方式</label>
                                 <select id="epayTestTypeSubmit" style="width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 6px;">
                                     <optgroup label="聚合支付">
                                         <option value="qr_cashier">聚合扫码(用户扫商家)</option>
@@ -900,66 +896,66 @@
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>支付金额（元）</label>
+                                <label data-i18n="lbl-amount-yuan">支付金额（元）</label>
                                 <input type="text" id="epayTestMoneySubmit" placeholder="0.01" value="0.01">
                             </div>
                             <div class="form-group">
-                                <label>商品名称</label>
+                                <label data-i18n="lbl-product-name">商品名称</label>
                                 <input type="text" id="epayTestNameSubmit" placeholder="测试商品" value="测试商品">
                             </div>
                             <div class="form-group">
-                                <label>异步通知地址（可选）</label>
+                                <label data-i18n="lbl-notify-url-opt">异步通知地址（可选）</label>
                                 <input type="text" id="epayTestNotifyUrlSubmit" placeholder="http://example.com/notify">
                             </div>
                             <div class="form-group">
-                                <label>同步跳转地址（可选）</label>
+                                <label data-i18n="lbl-return-url-opt">同步跳转地址（可选）</label>
                                 <input type="text" id="epayTestReturnUrlSubmit" placeholder="http://example.com/return">
                             </div>
-                            <button type="button" class="btn btn-primary" onclick="testEpaySubmitOrder()">执行测试</button>
+                            <button type="button" class="btn btn-primary" data-i18n="btn-run-test" onclick="testEpaySubmitOrder()">执行测试</button>
                             <div id="epaySubmitOrderResult" style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;">
-                                <h4 style="margin-bottom: 10px;">测试结果：</h4>
+                                <h4 style="margin-bottom: 10px;" data-i18n="sh-test-result">测试结果：</h4>
                                 <div id="epaySubmitOrderResultContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto;"></div>
                             </div>
                         </div>
 
                         <!-- 查询订单测试 -->
                         <div id="epayQueryOrderTest" style="display: none;">
-                            <h3 style="margin-bottom: 15px; font-size: 16px;">查询订单测试（api.php?act=order）</h3>
+                            <h3 style="margin-bottom: 15px; font-size: 16px;" data-i18n="sh-epay-query">查询订单测试（api.php?act=order）</h3>
                             <div class="form-group">
-                                <label>商户订单号（可选）</label>
+                                <label data-i18n="lbl-mch-order-no-opt">商户订单号（可选）</label>
                                 <input type="text" id="epayTestOutTradeNoQuery" placeholder="商户订单号">
                             </div>
                             <div class="form-group">
-                                <label>平台订单号（可选）</label>
+                                <label data-i18n="lbl-platform-order-no-opt">平台订单号（可选）</label>
                                 <input type="text" id="epayTestTradeNoQuery" placeholder="平台订单号">
                             </div>
-                            <div class="help-text">商户订单号和平台订单号至少填写一个</div>
-                            <button type="button" class="btn btn-primary" onclick="testEpayQueryOrder()">执行测试</button>
+                            <div class="help-text" data-i18n="ht-at-least-one-epay">商户订单号和平台订单号至少填写一个</div>
+                            <button type="button" class="btn btn-primary" data-i18n="btn-run-test" onclick="testEpayQueryOrder()">执行测试</button>
                             <div id="epayQueryOrderResult" style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;">
-                                <h4 style="margin-bottom: 10px;">测试结果：</h4>
+                                <h4 style="margin-bottom: 10px;" data-i18n="sh-test-result">测试结果：</h4>
                                 <pre id="epayQueryOrderResultContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto;"></pre>
                             </div>
                         </div>
 
                         <!-- 退款测试 -->
                         <div id="epayRefundTest" style="display: none;">
-                            <h3 style="margin-bottom: 15px; font-size: 16px;">退款测试（api.php?act=refund）</h3>
+                            <h3 style="margin-bottom: 15px; font-size: 16px;" data-i18n="sh-epay-refund">退款测试（api.php?act=refund）</h3>
                             <div class="form-group">
-                                <label>商户订单号（可选）</label>
+                                <label data-i18n="lbl-mch-order-no-opt">商户订单号（可选）</label>
                                 <input type="text" id="epayTestOutTradeNoRefund" placeholder="商户订单号">
                             </div>
                             <div class="form-group">
-                                <label>平台订单号（可选）</label>
+                                <label data-i18n="lbl-platform-order-no-opt">平台订单号（可选）</label>
                                 <input type="text" id="epayTestTradeNoRefund" placeholder="平台订单号">
                             </div>
                             <div class="form-group">
-                                <label>退款金额（元）</label>
+                                <label data-i18n="lbl-refund-amount">退款金额（元）</label>
                                 <input type="text" id="epayTestRefundMoney" placeholder="0.01" value="0.01">
                             </div>
-                            <div class="help-text">商户订单号和平台订单号至少填写一个</div>
-                            <button type="button" class="btn btn-primary" onclick="testEpayRefund()">执行测试</button>
+                            <div class="help-text" data-i18n="ht-at-least-one-epay">商户订单号和平台订单号至少填写一个</div>
+                            <button type="button" class="btn btn-primary" data-i18n="btn-run-test" onclick="testEpayRefund()">执行测试</button>
                             <div id="epayRefundResult" style="margin-top: 15px; padding: 15px; background: #f5f5f5; border-radius: 6px; display: none;">
-                                <h4 style="margin-bottom: 10px;">测试结果：</h4>
+                                <h4 style="margin-bottom: 10px;" data-i18n="sh-test-result">测试结果：</h4>
                                 <pre id="epayRefundResultContent" style="white-space: pre-wrap; word-wrap: break-word; font-size: 12px; max-height: 400px; overflow-y: auto;"></pre>
                             </div>
                         </div>
@@ -1026,12 +1022,12 @@
                     throw new Error(error.message || '登录失败');
                 }
 
-                showAlert('登录成功', 'success', 'loginAlert');
+                showAlert(t('login-success') || '登录成功', 'success', 'loginAlert');
                 setTimeout(() => {
                     checkAuthStatus();
                 }, 500);
             } catch (error) {
-                showAlert('登录失败: ' + error.message, 'error', 'loginAlert');
+                showAlert((t('login-error') || '登录失败: ') + error.message, 'error', 'loginAlert');
             }
         }
 
@@ -1121,7 +1117,7 @@
                 key += chars.charAt(Math.floor(Math.random() * chars.length));
             }
             document.getElementById('epayKey').value = key;
-            showAlert('已生成32位随机密钥', 'success');
+            showAlert(t('key-generated') || '已生成32位随机密钥', 'success');
         }
 
         // 加载本机IP地址列表
@@ -1156,9 +1152,9 @@
                         option.value = ip;
                         let label = ip;
                         if (ip === '0.0.0.0') {
-                            label = '0.0.0.0 (所有接口)';
+                            label = _currentLang === 'en' ? '0.0.0.0 (all interfaces)' : '0.0.0.0 (所有接口)';
                         } else if (ip === '127.0.0.1') {
-                            label = '127.0.0.1 (本地回环)';
+                            label = _currentLang === 'en' ? '127.0.0.1 (loopback)' : '127.0.0.1 (本地回环)';
                         }
                         option.textContent = label;
                         select.appendChild(option);
@@ -1221,7 +1217,7 @@
                     // 重新加载IP地址列表
                     loadNetworkInterfaces();
                     
-                    showAlert('✅ 配置加载成功', 'success');
+                    showAlert('✅ ' + (t('load-success') || '配置加载成功'), 'success');
                 } catch (error) {
                     showAlert('❌ 配置加载失败: 表单填充错误 - ' + error.message, 'error');
                 }
@@ -1340,7 +1336,7 @@
                 }
 
                 const result = await response.json();
-                showAlert('✅ 配置保存成功！请重启服务器使配置生效。', 'success');
+                showAlert('✅ ' + (t('save-success') || '配置保存成功！请重启服务器使配置生效。'), 'success');
                 
                 // 如果修改了密码，清空密码字段
                 if (adminPassword) {
@@ -2125,7 +2121,82 @@
             'save-success':           'Configuration saved. Restart the server for changes to take effect.',
             'save-error':             'Failed to save: ',
             'load-error':             'Failed to load configuration',
-            'logout-confirm':         'Are you sure you want to logout?'
+            'logout-confirm':         'Are you sure you want to logout?',
+            // ── Paystack tab ──────────────────────────────────────────────
+            'sh-paystack':              '🌍 Paystack Gateway Config',
+            'sh-ps-debug':              '🧪 Paystack API Debug',
+            'note-paystack':            '💡 <strong>Note:</strong> After enabling Paystack, all payment requests will route through Paystack. Jeepay config is still required but not used for payments. Supported currencies: NGN, GHS, ZAR, KES, USD, GBP, EUR.',
+            'lbl-paystack-enable':      'Enable Paystack Gateway',
+            'ht-paystack-enable':       'When enabled, payments route through Paystack',
+            'ph-paystack-key':          'Paste your Paystack secret key here',
+            'ht-paystack-key':          'Format: sk_test_... (test) or sk_live_... (live). Never expose this key!',
+            'lbl-paystack-currency':    'Currency Code',
+            'ht-paystack-currency':     'Amount will be auto-converted to subunit (×100)',
+            'lbl-paystack-email':       'Default Customer Email',
+            'ht-paystack-email':        'Used when payment request does not include email',
+            'lbl-paystack-webhook-path':'Webhook Path',
+            'ht-paystack-webhook-path': 'In Paystack Dashboard → Settings → API Keys & Webhooks, set Webhook URL to:',
+            'lbl-paystack-baseurl':     'API Base URL',
+            'ht-paystack-baseurl':      'Usually no need to change this',
+            'lbl-paystack-channels':    'Payment Channels',
+            'btn-ps-init':              'Initialize',
+            'btn-ps-verify':            'Verify',
+            'btn-ps-simulate':          'Simulate Webhook',
+            'note-ps-webhook-warn':     '⚠ This test sends a simulated webhook without a valid signature; the server should reject it (401). Use this to verify rejection logic.',
+            'btn-ps-send-webhook':      '📡 Send Simulated Webhook',
+            'lbl-result':               'Result',
+            'lbl-ps-order-no':          'out_trade_no (Order No)',
+            'lbl-ps-amount':            'Amount (yuan)',
+            'lbl-ps-product-name':      'Product Name',
+            'btn-ps-test-init':         '🚀 Test Initialize',
+            'lbl-ps-reference':         'Transaction Reference',
+            'btn-ps-test-verify':       '🔍 Verify',
+
+            // ── Tests tab ─────────────────────────────────────────────────
+            'sh-tests-title':           '🧪 API Debug',
+            'sh-jeepay-test':           '🚀 Jeepay API Debug',
+            'sh-epay-test':             '💳 e-pay API Debug',
+            'btn-jeepay-unified-order': 'Unified Order Test',
+            'btn-jeepay-query-order':   'Query Order Test',
+            'sh-jeepay-unified-order':  'Unified Order Test',
+            'sh-jeepay-query-order':    'Query Order Test',
+            'lbl-mch-order-no':         'Merchant Order No.',
+            'lbl-pay-method':           'Payment Method',
+            'lbl-amount-fen':           'Amount (fen)',
+            'lbl-amount-yuan':          'Amount (yuan)',
+            'lbl-product-title':        'Product Title',
+            'lbl-product-desc':         'Product Description',
+            'lbl-product-name':         'Product Name',
+            'lbl-channel-extra':        'Channel Extension (channelExtra)',
+            'ht-channel-extra-hint':    '<strong>Tip:</strong> channelExtra requirements vary by payment method — see below.',
+            'lbl-auth-code':            'Auth Code <span style="color:red">*required</span>',
+            'lbl-user-id':              'User ID',
+            'lbl-buyer-user-id':        'Alipay Buyer User ID <span style="color:red">*required</span>',
+            'lbl-openid':               'WeChat OpenID <span style="color:red">*required</span>',
+            'lbl-pay-data-type':        'payDataType <span style="color:#999">optional</span>',
+            'ht-channel-extra-tip':     'Tip: channelExtra JSON is auto-built based on the selected payment method',
+            'btn-run-test':             'Run Test',
+            'sh-test-result':           'Result:',
+            'lbl-pay-order-id-opt':     'Pay Order ID (optional)',
+            'lbl-mch-order-no-opt':     'Merchant Order No. (optional)',
+            'ht-at-least-one-jeepay':   'At least one of the above is required',
+            'btn-epay-create':          'Create Order Test',
+            'btn-epay-submit':          'Submit Order Test',
+            'btn-epay-query':           'Query Order Test',
+            'btn-epay-refund':          'Refund Test',
+            'sh-epay-create':           'Create Order Test (mapi.php)',
+            'sh-epay-submit':           'Submit Order Test (submit.php)',
+            'sh-epay-query':            'Query Order Test (api.php?act=order)',
+            'sh-epay-refund':           'Refund Test (api.php?act=refund)',
+            'lbl-notify-url-opt':       'Async Notify URL (optional)',
+            'lbl-return-url-opt':       'Return URL (optional)',
+            'lbl-platform-order-no-opt':'Platform Order No. (optional)',
+            'ht-at-least-one-epay':     'At least one order number is required',
+            'lbl-refund-amount':        'Refund Amount (yuan)',
+
+            // ── JS alert strings ──────────────────────────────────────────
+            'key-generated':            '32-character key generated',
+            'load-success':             'Config loaded successfully',
         };
 
         // 当前语言 / Current language (set during initLang)
@@ -2219,6 +2290,25 @@
             // IP 选择器默认选项 / IP selector placeholder option
             const ipSelect = document.getElementById('serverHostSelect');
             if (ipSelect && ipSelect.options[0]) ipSelect.options[0].text = _en['btn-select-ip'];
+            // ── New section headers ────────────────────────────────────────
+            _setSectionHeader('i18n-sh-paystack',   '🌍', 'sh-paystack');
+            _setSectionHeader('i18n-sh-ps-debug',   '🧪', 'sh-ps-debug');
+            _setSectionHeader('i18n-sh-jeepay-test','🚀', 'sh-jeepay-test');
+            _setSectionHeader('i18n-sh-epay-test',  '💳', 'sh-epay-test');
+
+            // ── Generic data-i18n / data-i18n-ph / data-i18n-html ──────────
+            document.querySelectorAll('[data-i18n]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n');
+                if (_en[key]) el.textContent = _en[key];
+            });
+            document.querySelectorAll('[data-i18n-ph]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n-ph');
+                if (_en[key]) el.placeholder = _en[key];
+            });
+            document.querySelectorAll('[data-i18n-html]').forEach(function(el) {
+                var key = el.getAttribute('data-i18n-html');
+                if (_en[key]) el.innerHTML = _en[key];
+            });
         }
 
         // 工具函数 / Utility functions
