@@ -215,6 +215,16 @@ async function main() {
     }
   });
 
+  // 语言配置接口 / Language config endpoint
+  // 读取 APP_LANG 环境变量，返回当前界面语言
+  // Reads APP_LANG env var and returns current UI language
+  // APP_LANG=zh (默认/default) → 中文 / APP_LANG=en → English
+  app.get('/api/lang', (req, res) => {
+    const raw  = (process.env.APP_LANG || 'zh').toLowerCase().trim();
+    const lang = raw === 'en' ? 'en' : 'zh';
+    res.json({ lang });
+  });
+
   app.get('/api/health', (req, res) => {
     res.json({
       status:    'healthy',
