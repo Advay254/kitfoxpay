@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin / 配置管理 - KitfoxPay</title>
+    <title>配置管理 - KitfoxPay</title>
     <style>
         * {
             margin: 0;
@@ -352,48 +352,41 @@
     </style>
 </head>
 <body>
-    <!-- 登录对话框 / Login dialog -->
+    <!-- 登录对话框 -->
     <div id="loginOverlay" class="login-overlay">
         <div class="login-dialog">
-            <h2>🔐 Admin Login / 配置管理登录</h2>
+            <h2 id="i18n-login-title">🔐 配置管理登录</h2>
             <div id="loginAlert" class="alert" style="display: none;"></div>
             <form id="loginForm">
                 <div class="form-group">
-                    <label for="loginPassword">Password / 管理密码</label>
-                    <input type="password" id="loginPassword" name="password"
-                        placeholder="Enter admin password / 请输入管理密码" required autofocus>
+                    <label id="i18n-login-label" for="loginPassword">管理密码</label>
+                    <input type="password" id="loginPassword" name="password" placeholder="请输入管理密码" required autofocus>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width:100%;">
-                    Login / 登录
-                </button>
+                <button type="submit" id="i18n-login-btn" class="btn btn-primary">登录</button>
             </form>
-            <p style="text-align:center; margin-top:14px; font-size:12px; color:#888; line-height:1.8;">
-                Default password / 初始密码: <code style="background:#f0f0f0; padding:2px 6px; border-radius:3px; color:#333;">admin</code><br>
-                <span style="color:#e57373;">Change it after first login / 首次登录后请立即修改密码</span>
-            </p>
         </div>
     </div>
 
     <div class="container" id="mainContainer" style="display: none;">
         <div class="header">
-            <h1>⚙️ 配置管理</h1>
-            <p>KitfoxPay Payment Platform — Admin / 配置管理界面</p>
-            <button class="btn btn-secondary logout-btn" onclick="logout()">登出</button>
+            <h1 id="i18n-main-title">⚙️ 配置管理</h1>
+            <p id="i18n-main-subtitle">KitfoxPay 支付平台配置管理界面</p>
+            <button id="i18n-logout-btn" class="btn btn-secondary logout-btn" onclick="logout()">登出</button>
         </div>
 
         <div class="content">
             <div id="alert" class="alert"></div>
             <div id="loading" class="loading">
                 <div class="spinner"></div>
-                <p style="margin-top: 10px;">加载中...</p>
+                <p id="i18n-loading" style="margin-top: 10px;">加载中...</p>
             </div>
 
             <div class="tabs">
-                <button class="tab-btn active" data-tab="server" onclick="showTab('server')">🌐 网站设置</button>
-                <button class="tab-btn" data-tab="jeepay" onclick="showTab('jeepay')">🚀 Jeepay 配置</button>
-                <button class="tab-btn" data-tab="epay" onclick="showTab('epay')">💳 易支付 配置</button>
-                <button class="tab-btn" data-tab="paystack" onclick="showTab('paystack')">🌍 Paystack 配置</button>
-                <button class="tab-btn" data-tab="tests" onclick="showTab('tests')">🧪 接口调试</button>
+                <button id="i18n-tab-server" class="tab-btn active" data-tab="server" onclick="showTab('server')">🌐 网站设置</button>
+                <button id="i18n-tab-jeepay" class="tab-btn" data-tab="jeepay" onclick="showTab('jeepay')">🚀 Jeepay 配置</button>
+                <button id="i18n-tab-epay" class="tab-btn" data-tab="epay" onclick="showTab('epay')">💳 易支付 配置</button>
+                <button id="i18n-tab-paystack" class="tab-btn" data-tab="paystack" onclick="showTab('paystack')">🌍 Paystack 配置</button>
+                <button id="i18n-tab-tests" class="tab-btn" data-tab="tests" onclick="showTab('tests')">🧪 接口调试</button>
             </div>
 
             <!-- 网站设置 Tab -->
@@ -402,13 +395,13 @@
                     <!-- 网站域名配置 -->
                     <div class="section">
                         <div class="section-header">
-                            <span><span class="icon">🌐</span> 网站域名配置</span>
+                            <span id="i18n-sh-site"><span class="icon">🌐</span> 网站域名配置</span>
                         </div>
                         <div class="section-content">
                             <div class="form-group">
-                                <label for="siteDomain">网站域名</label>
+                                <label id="i18n-lbl-sitedomain" for="siteDomain">网站域名</label>
                                 <input type="text" id="siteDomain" name="siteDomain" placeholder="http://localhost:9219" required>
-                                <div class="help-text">用于生成通知URL和支付跳转URL的网站域名（例如：http://yourdomain.com 或 https://yourdomain.com）</div>
+                                <div id="i18n-ht-sitedomain" class="help-text">用于生成通知URL和支付跳转URL的网站域名（例如：http://yourdomain.com 或 https://yourdomain.com）</div>
                             </div>
                         </div>
                     </div>
@@ -416,24 +409,24 @@
                     <!-- 服务器配置 -->
                     <div class="section">
                         <div class="section-header">
-                            <span><span class="icon">🖥️</span> 服务器配置</span>
+                            <span id="i18n-sh-server"><span class="icon">🖥️</span> 服务器配置</span>
                         </div>
                         <div class="section-content">
                             <div class="form-group">
-                                <label for="serverHost">绑定IP地址</label>
+                                <label id="i18n-lbl-serverhost" for="serverHost">绑定IP地址</label>
                                 <div style="display: flex; gap: 10px;">
                                     <select id="serverHostSelect" style="flex: 0 0 150px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" onchange="selectServerHost()">
                                         <option value="">选择IP...</option>
                                     </select>
                                     <input type="text" id="serverHost" name="serverHost" placeholder="0.0.0.0" required style="flex: 1;">
                                 </div>
-                                <div class="help-text">服务器绑定的IP地址，0.0.0.0 表示监听所有网络接口。可以从下拉列表选择本机IP，或手动输入</div>
+                                <div id="i18n-ht-serverhost" class="help-text">服务器绑定的IP地址，0.0.0.0 表示监听所有网络接口。可以从下拉列表选择本机IP，或手动输入</div>
                             </div>
 
                             <div class="form-group">
-                                <label for="serverPort">绑定端口</label>
+                                <label id="i18n-lbl-serverport" for="serverPort">绑定端口</label>
                                 <input type="number" id="serverPort" name="serverPort" placeholder="9219" required>
-                                <div class="help-text">服务器绑定的端口号</div>
+                                <div id="i18n-ht-serverport" class="help-text">服务器绑定的端口号</div>
                             </div>
                         </div>
                     </div>
@@ -441,13 +434,13 @@
                     <!-- 管理密码配置 -->
                     <div class="section">
                         <div class="section-header">
-                            <span><span class="icon">🔐</span> 管理密码配置</span>
+                            <span id="i18n-sh-password"><span class="icon">🔐</span> 管理密码配置</span>
                         </div>
                         <div class="section-content">
                             <div class="form-group">
-                                <label for="adminPassword">管理密码</label>
+                                <label id="i18n-lbl-adminpassword" for="adminPassword">管理密码</label>
                                 <input type="password" id="adminPassword" name="adminPassword" placeholder="请输入新的管理密码（留空则保持原密码）">
-                                <div class="help-text">用于访问配置管理界面的密码。留空则保持当前密码不变</div>
+                                <div id="i18n-ht-adminpassword" class="help-text">用于访问配置管理界面的密码。留空则保持当前密码不变</div>
                             </div>
                         </div>
                     </div>
@@ -465,31 +458,31 @@
                 <form id="jeepayForm">
                     <div class="section">
                         <div class="section-header">
-                            <span><span class="icon">🚀</span> Jeepay 配置</span>
+                            <span id="i18n-sh-jeepay"><span class="icon">🚀</span> Jeepay 配置</span>
                         </div>
                         <div class="section-content">
                             <div class="form-group">
-                                <label for="baseUrl">API 基础URL</label>
+                                <label id="i18n-lbl-baseurl" for="baseUrl">API 基础URL</label>
                                 <input type="text" id="baseUrl" name="baseUrl" placeholder="https://api.pay.kitfoxai.art" required>
-                                <div class="help-text">Jeepay API 的基础地址</div>
+                                <div id="i18n-ht-baseurl" class="help-text">Jeepay API 的基础地址</div>
                             </div>
 
                             <div class="form-group">
-                                <label for="mchNo">商户号</label>
+                                <label id="i18n-lbl-mchno" for="mchNo">商户号</label>
                                 <input type="text" id="mchNo" name="mchNo" placeholder="M1766735992" required>
-                                <div class="help-text">您的 Jeepay 商户号</div>
+                                <div id="i18n-ht-mchno" class="help-text">您的 Jeepay 商户号</div>
                             </div>
 
                             <div class="form-group">
-                                <label for="appId">应用ID</label>
+                                <label id="i18n-lbl-appid" for="appId">应用ID</label>
                                 <input type="text" id="appId" name="appId" placeholder="694e8f00e4b00abc767ea3b8" required>
-                                <div class="help-text">您的 Jeepay 应用ID</div>
+                                <div id="i18n-ht-appid" class="help-text">您的 Jeepay 应用ID</div>
                             </div>
 
                             <div class="form-group">
-                                <label for="privateKey">商户私钥</label>
+                                <label id="i18n-lbl-privatekey" for="privateKey">商户私钥</label>
                                 <textarea id="privateKey" name="privateKey" class="large" placeholder="您的商户私钥" required></textarea>
-                                <div class="help-text">用于签名请求的商户私钥。注意：Jeepay 的私钥格式可能不是标准的 PEM 格式，请根据平台要求填写</div>
+                                <div id="i18n-ht-privatekey" class="help-text">用于签名请求的商户私钥。注意：Jeepay 的私钥格式可能不是标准的 PEM 格式，请根据平台要求填写</div>
                             </div>
                         </div>
                     </div>
@@ -508,22 +501,22 @@
                 <form id="epayForm">
                     <div class="section">
                         <div class="section-header">
-                            <span><span class="icon">💳</span> 易支付 配置</span>
+                            <span id="i18n-sh-epay"><span class="icon">💳</span> 易支付 配置</span>
                         </div>
                         <div class="section-content">
                             <div class="form-group">
-                                <label for="epayPid">商户ID</label>
+                                <label id="i18n-lbl-epaypid" for="epayPid">商户ID</label>
                                 <input type="text" id="epayPid" name="epayPid" placeholder="你的商户ID" required>
-                                <div class="help-text">您的 易支付 商户ID</div>
+                                <div id="i18n-ht-epaypid" class="help-text">您的 易支付 商户ID</div>
                             </div>
 
                             <div class="form-group">
-                                <label for="epayKey">商户密钥</label>
+                                <label id="i18n-lbl-epaykey" for="epayKey">商户密钥</label>
                                 <div style="display: flex; gap: 10px;">
                                     <input type="text" id="epayKey" name="epayKey" placeholder="你的商户密钥" required style="flex: 1;">
                                     <button type="button" class="btn btn-secondary" onclick="generateEpayKey()" style="white-space: nowrap; padding: 8px 15px;">🎲 生成32位密钥</button>
                                 </div>
-                                <div class="help-text">用于 MD5 签名的商户密钥（必填）。可以点击按钮生成随机32位密钥</div>
+                                <div id="i18n-ht-epaykey" class="help-text">用于 MD5 签名的商户密钥（必填）。可以点击按钮生成随机32位密钥</div>
                             </div>
                         </div>
                     </div>
@@ -1975,7 +1968,8 @@
         }
 
         // 页面加载时检查登录状态
-        window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('DOMContentLoaded', async function() {
+            await initLang();
             checkAuthStatus();
             initPaymentTypeDefaults();
         });
@@ -2093,6 +2087,222 @@
                 document.getElementById('psWebhookResultContent').textContent = result;
             } catch(e) {
                 document.getElementById('psWebhookResultContent').textContent = '错误 / Error: ' + e.message;
+            }
+        }
+
+
+        // ═══════════════════════════════════════════════════════
+        // 国际化 / Internationalization (i18n)
+        //
+        // 默认语言：中文 / Default language: Chinese
+        // 英文模式：设置环境变量 APP_LANG=en
+        // English mode: set environment variable APP_LANG=en
+        // ═══════════════════════════════════════════════════════
+
+        // 英文翻译表 / English translation table
+        // 中文为默认，HTML 中已包含，此处仅定义英文
+        // Chinese is default and already in HTML; only English defined here
+        const _en = {
+            // 页面标题 / Page title
+            'title':                  'Admin — KitfoxPay',
+
+            // 登录 / Login
+            'login-title':            '🔐 Admin Login',
+            'login-label':            'Admin Password',
+            'login-placeholder':      'Enter admin password',
+            'login-btn':              'Login',
+            'login-error':            'Login failed: ',
+            'login-success':          'Login successful',
+
+            // 主界面 / Main UI
+            'main-title':             '⚙️ Configuration',
+            'main-subtitle':          'KitfoxPay Payment Platform — Admin Panel',
+            'logout-btn':             'Logout',
+            'loading':                'Loading...',
+
+            // 标签页 / Tabs
+            'tab-server':             '🌐 Site Settings',
+            'tab-jeepay':             '🚀 Jeepay Config',
+            'tab-epay':               '💳 e-pay Config',
+            'tab-paystack':           '🌍 Paystack Config',
+            'tab-tests':              '🧪 API Debug',
+
+            // 章节标题 / Section headers
+            'sh-site':                '🌐 Site Domain',
+            'sh-server':              '🖥️ Server Config',
+            'sh-password':            '🔐 Admin Password',
+            'sh-jeepay':              '🚀 Jeepay Config',
+            'sh-epay':                '💳 e-pay Config',
+
+            // 标签 / Labels
+            'lbl-sitedomain':         'Site Domain',
+            'lbl-serverhost':         'Bind IP Address',
+            'lbl-serverport':         'Bind Port',
+            'lbl-adminpassword':      'Admin Password',
+            'lbl-baseurl':            'API Base URL',
+            'lbl-mchno':              'Merchant No.',
+            'lbl-appid':              'App ID',
+            'lbl-privatekey':         'Merchant Private Key',
+            'lbl-epaypid':            'Merchant ID',
+            'lbl-epaykey':            'Merchant Key',
+
+            // 帮助文本 / Help texts
+            'ht-sitedomain':          'Domain used to generate callback and redirect URLs (e.g. http://yourdomain.com or https://yourdomain.com)',
+            'ht-serverhost':          'IP address to bind the server. 0.0.0.0 listens on all interfaces. Select from the list or type manually.',
+            'ht-serverport':          'Port number to listen on',
+            'ht-adminpassword':       'Password for accessing this admin panel. Leave blank to keep the current password.',
+            'ht-baseurl':             'Jeepay API base URL',
+            'ht-mchno':               'Your Jeepay merchant number',
+            'ht-appid':               'Your Jeepay app ID',
+            'ht-privatekey':          'Merchant private key used to sign requests. Note: Jeepay key format may not be standard PEM — follow your platform's requirements.',
+            'ht-epaypid':             'Your e-pay merchant ID',
+            'ht-epaykey':             'Merchant key for MD5 signing (required). Click the button to generate a random 32-character key.',
+
+            // 占位符 / Placeholders
+            'ph-sitedomain':          'http://localhost:9219',
+            'ph-serverhost':          '0.0.0.0',
+            'ph-serverport':          '9219',
+            'ph-adminpassword':       'New admin password (leave blank to keep current)',
+            'ph-mchno':               'M1766735992',
+            'ph-appid':               '694e8f00e4b00abc767ea3b8',
+            'ph-privatekey':          'Your merchant private key',
+            'ph-epaypid':             'Your merchant ID',
+            'ph-epaykey':             'Your merchant key',
+
+            // 按钮 / Buttons
+            'btn-reload':             '🔄 Reload',
+            'btn-reset':              '↩️ Reset',
+            'btn-save':               '💾 Save Config',
+            'btn-generate-key':       '🎲 Generate 32-char Key',
+            'btn-select-ip':          'Select IP...',
+
+            // 通用提示 / General alerts
+            'save-success':           'Configuration saved. Restart the server for changes to take effect.',
+            'save-error':             'Failed to save: ',
+            'load-error':             'Failed to load configuration',
+            'logout-confirm':         'Are you sure you want to logout?'
+        };
+
+        // 当前语言 / Current language (set during initLang)
+        let _currentLang = 'zh';
+
+        // 翻译辅助：获取当前语言的字符串 / Translation helper
+        function t(key) {
+            if (_currentLang === 'en') return _en[key] || key;
+            return null; // null = use existing HTML content (Chinese default)
+        }
+
+        // 应用翻译到页面 / Apply translations to page
+        function _applyLang(lang) {
+            _currentLang = lang;
+            if (lang !== 'en') return; // Chinese is the HTML default, nothing to do
+
+            // 页面标题 / Page title
+            document.title = _en['title'];
+
+            // 登录对话框 / Login dialog
+            _setText('i18n-login-title', 'login-title');
+            _setText('i18n-login-label', 'login-label');
+            _setAttr('loginPassword', 'placeholder', 'login-placeholder');
+            _setText('i18n-login-btn', 'login-btn');
+
+            // 主界面 / Main UI
+            _setText('i18n-main-title', 'main-title');
+            _setText('i18n-main-subtitle', 'main-subtitle');
+            _setText('i18n-logout-btn', 'logout-btn');
+            _setText('i18n-loading', 'loading');
+
+            // 标签页 / Tabs
+            _setText('i18n-tab-server',   'tab-server');
+            _setText('i18n-tab-jeepay',   'tab-jeepay');
+            _setText('i18n-tab-epay',     'tab-epay');
+            _setText('i18n-tab-paystack', 'tab-paystack');
+            _setText('i18n-tab-tests',    'tab-tests');
+
+            // 章节标题（保留图标）/ Section headers (preserve icon spans)
+            _setSectionHeader('i18n-sh-site',     '🌐', 'sh-site');
+            _setSectionHeader('i18n-sh-server',   '🖥️', 'sh-server');
+            _setSectionHeader('i18n-sh-password', '🔐', 'sh-password');
+            _setSectionHeader('i18n-sh-jeepay',   '🚀', 'sh-jeepay');
+            _setSectionHeader('i18n-sh-epay',     '💳', 'sh-epay');
+
+            // 标签 / Labels
+            _setText('i18n-lbl-sitedomain',    'lbl-sitedomain');
+            _setText('i18n-lbl-serverhost',    'lbl-serverhost');
+            _setText('i18n-lbl-serverport',    'lbl-serverport');
+            _setText('i18n-lbl-adminpassword', 'lbl-adminpassword');
+            _setText('i18n-lbl-baseurl',       'lbl-baseurl');
+            _setText('i18n-lbl-mchno',         'lbl-mchno');
+            _setText('i18n-lbl-appid',         'lbl-appid');
+            _setText('i18n-lbl-privatekey',    'lbl-privatekey');
+            _setText('i18n-lbl-epaypid',       'lbl-epaypid');
+            _setText('i18n-lbl-epaykey',       'lbl-epaykey');
+
+            // 帮助文本 / Help texts
+            _setText('i18n-ht-sitedomain',    'ht-sitedomain');
+            _setText('i18n-ht-serverhost',    'ht-serverhost');
+            _setText('i18n-ht-serverport',    'ht-serverport');
+            _setText('i18n-ht-adminpassword', 'ht-adminpassword');
+            _setText('i18n-ht-baseurl',       'ht-baseurl');
+            _setText('i18n-ht-mchno',         'ht-mchno');
+            _setText('i18n-ht-appid',         'ht-appid');
+            _setText('i18n-ht-privatekey',    'ht-privatekey');
+            _setText('i18n-ht-epaypid',       'ht-epaypid');
+            _setText('i18n-ht-epaykey',       'ht-epaykey');
+
+            // 占位符 / Placeholders
+            _setAttr('siteDomain',    'placeholder', 'ph-sitedomain');
+            _setAttr('serverHost',    'placeholder', 'ph-serverhost');
+            _setAttr('serverPort',    'placeholder', 'ph-serverport');
+            _setAttr('adminPassword', 'placeholder', 'ph-adminpassword');
+            _setAttr('mchNo',         'placeholder', 'ph-mchno');
+            _setAttr('appId',         'placeholder', 'ph-appid');
+            _setAttr('privateKey',    'placeholder', 'ph-privatekey');
+            _setAttr('epayPid',       'placeholder', 'ph-epaypid');
+            _setAttr('epayKey',       'placeholder', 'ph-epaykey');
+
+            // 按钮（多个 / Multiple buttons with same onclick) ──
+            document.querySelectorAll('button[onclick="loadConfig()"]').forEach(
+                b => b.textContent = _en['btn-reload']);
+            document.querySelectorAll('button[onclick="saveConfig()"]').forEach(
+                b => b.textContent = _en['btn-save']);
+            document.querySelectorAll('button[onclick="resetServerConfig()"], button[onclick="resetJeepayConfig()"], button[onclick="resetEpayConfig()"]').forEach(
+                b => b.textContent = _en['btn-reset']);
+            const genBtn = document.querySelector('button[onclick="generateEpayKey()"]');
+            if (genBtn) genBtn.textContent = _en['btn-generate-key'];
+
+            // IP 选择器默认选项 / IP selector placeholder option
+            const ipSelect = document.getElementById('serverHostSelect');
+            if (ipSelect && ipSelect.options[0]) ipSelect.options[0].text = _en['btn-select-ip'];
+        }
+
+        // 工具函数 / Utility functions
+        function _setText(id, key) {
+            const el = document.getElementById(id);
+            if (el && _en[key]) el.textContent = _en[key];
+        }
+        function _setAttr(id, attr, key) {
+            const el = document.getElementById(id);
+            if (el && _en[key]) el.setAttribute(attr, _en[key]);
+        }
+        function _setSectionHeader(id, icon, key) {
+            const el = document.getElementById(id);
+            if (el && _en[key]) {
+                el.innerHTML = '<span class="icon">' + icon + '</span> ' + _en[key];
+            }
+        }
+
+        // 初始化语言 / Initialize language
+        // 从服务器读取 APP_LANG 环境变量 / Reads APP_LANG env var from server
+        async function initLang() {
+            try {
+                const resp = await fetch('/api/lang', { credentials: 'include' });
+                if (resp.ok) {
+                    const { lang } = await resp.json();
+                    _applyLang(lang || 'zh');
+                }
+            } catch (_) {
+                // 语言初始化失败时回退中文 / Fallback to Chinese if lang init fails
             }
         }
 
