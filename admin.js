@@ -4,6 +4,9 @@ const path = require('path');
 const crypto = require('crypto');
 const os = require('os');
 
+// 数据库存储单例（用于配置持久化）/ DB store singleton (for config persistence)
+const db = require('./db');
+
 const router = express.Router();
 const configRouter = express.Router();
 
@@ -177,7 +180,7 @@ configRouter.get('/', requireAuth, (req, res) => {
  * 更新配置
  * PUT /api/config
  */
-configRouter.put('/', requireAuth, (req, res) => {
+configRouter.put('/', requireAuth, async (req, res) => {
   try {
     const newConfig = req.body;
 
@@ -293,9 +296,13 @@ module.exports = {
 };
 `;
 
-    // 写入配置文件
+    // 写入配置文件 / Write config file
     const configPath = path.join(__dirname, 'config.js');
     fs.writeFileSync(configPath, configContent, 'utf8');
+
+    // 同步到数据库（确保重启/重部署后配置不丢失）
+    // Sync to database (ensures config survives restarts/redeploys)
+    await db.saveConfig(configContent);
 
     res.json({ 
       success: true, 

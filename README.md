@@ -297,16 +297,20 @@ paystack: {
 
 ```
 KitfoxPay/
-├── index.js              # 主入口文件
+├── index.js              # 主入口文件（异步启动，数据库优先加载配置）
 ├── epay.js               # 易支付适配器（支持 Jeepay / Paystack 双路由）
 ├── jeepay/               # Jeepay 客户端模块
 │   ├── index.js
 │   └── jeepay.js
-├── paystack/             # Paystack 客户端模块（新增）
+├── paystack/             # Paystack 客户端模块
 │   └── paystack.js       # Paystack API 客户端 + Webhook 验证
-├── admin.js              # 管理后台 API
-├── config.js             # 配置文件（含 paystack 配置块）
-├── config.example.js     # 配置示例
+├── db/                   # 数据库存储层（配置持久化 + Webhook 幂等性）
+│   ├── index.js          # 单例导出 / Singleton export
+│   └── store.js          # PostgreSQL 存储类（自动建表）
+├── admin.js              # 管理后台 API（配置保存时同步到数据库）
+├── config.js             # 配置文件（gitignored，启动时从数据库恢复）
+├── config.example.js     # 配置示例（首次部署时自动复制）
+├── .env.example          # 环境变量说明（仅需 DATABASE_URL）
 ├── SECURITY.md           # 安全说明（Webhook 验证机制）
 ├── public/               # 静态文件
 │   └── index.html        # Web 管理界面（含 Paystack 配置 Tab）
