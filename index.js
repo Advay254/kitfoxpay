@@ -4,9 +4,13 @@ const path    = require('path');
 const cors    = require('cors');
 const axios   = require('axios');
 const session    = require('express-session');
-// PostgreSQL session store（有 DATABASE_URL 时使用，避免 MemoryStore 内存泄漏）
-// PostgreSQL session store (used when DATABASE_URL is set, avoids MemoryStore memory leak)
-const PgSession = require('connect-pg-simple')(session);
+// Session 存储策略 / Session store strategy:
+//   DATABASE_URL 已设置 → connect-pg-simple（PostgreSQL 持久化）
+//   DATABASE_URL 未设置 → memorystore（LRU + TTL，生产安全，无内存泄漏，无警告）
+//   DATABASE_URL set     → connect-pg-simple (PostgreSQL persistent)
+//   DATABASE_URL not set → memorystore (LRU + TTL, production-safe, no leak, no warning)
+const PgSession   = require('connect-pg-simple')(session);
+const MemoryStore = require('memorystore')(session);
 
 // 数据库存储单例（必须最先初始化，启动时用于恢复配置）
 // DB store singleton (must init first — used to restore config on startup)
@@ -102,22 +106,28 @@ async function main() {
   });
 
   // Session 配置 / Session config
-  // secret 使用稳定值（不用 Date.now()，否则重启后所有 session 失效）
-  // Use a stable secret (not Date.now(), which invalidates all sessions on restart)
+  // secret 使用稳定值（不用 Date.now()，否则重启后所有会话立即失效）
+  // Stable secret — not Date.now(), which invalidates all sessions on every restart
   const sessionSecret = 'kitfoxpay-' + (config.admin?.password || 'default-secret');
 
+  // Session 存储选择 / Session store selection:
+  //   DATABASE_URL 已设置 → PostgreSQL（跨重启持久化，管理员无需重新登录）
+  //   DATABASE_URL 未设置 → memorystore（LRU + TTL 有界内存，生产安全，无泄漏警告）
+  //   DATABASE_URL set     → PostgreSQL (persistent across restarts, admin stays logged in)
+  //   DATABASE_URL not set → memorystore (LRU + TTL bounded, production-safe, no warning)
+  const sessionStore = process.env.DATABASE_URL
+    ? new PgSession({
+        conString:            process.env.DATABASE_URL,
+        createTableIfMissing: true,   // 自动建表，首次运行无需手动执行 SQL / auto-create table
+        ssl:                  { rejectUnauthorized: false }
+      })
+    : new MemoryStore({
+        checkPeriod: 86400000, // 每 24h 清理过期会话 / prune expired sessions every 24h
+        max:         500       // 最多同时维持 500 个会话 / max 500 concurrent sessions
+      });
+
   app.use(session({
-    // 有 DATABASE_URL → 用 PostgreSQL 存储 session，重启后管理员登录状态保持
-    // DATABASE_URL set → use PostgreSQL session store, admin stays logged in across restarts
-    // 无 DATABASE_URL → 用内存存储（会有 MemoryStore 警告，重启后需重新登录）
-    // No DATABASE_URL → use memory store (MemoryStore warning expected, login lost on restart)
-    store: process.env.DATABASE_URL
-      ? new PgSession({
-          conString:            process.env.DATABASE_URL,
-          createTableIfMissing: true,            // 自动建 session 表 / auto-create session table
-          ssl:                  { rejectUnauthorized: false }
-        })
-      : undefined,  // undefined = express-session 默认 MemoryStore / default MemoryStore
+    store:             sessionStore,
     secret:            sessionSecret,
     resave:            false,
     saveUninitialized: false,
